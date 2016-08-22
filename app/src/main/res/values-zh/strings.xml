@@ -5,7 +5,7 @@
     <string name="notification_content_text">正在使用的配置: %1$s</string>
     <string name="notification_content_title">V2Ray正在运行</string>
     <string name="menu_item_add_config">添加配置</string>
-    <string name="msg_dialog_convert_config">改配置文件与Android版本的V2Ray不兼容，点击确定进行转化。</string>
+    <string name="msg_dialog_convert_config">配置文件与Actinium不兼容，点击确定进行转化。</string>
     <string name="title_dialog_convert_config">转化配置文件</string>
     <string name="title_file_chooser">选择文件以导入</string>
     <string name="toast_config_file_invalid">配置文件无效</string>
