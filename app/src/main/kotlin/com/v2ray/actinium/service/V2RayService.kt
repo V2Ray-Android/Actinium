@@ -7,12 +7,15 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.net.NetworkInfo
 import android.net.VpnService
 import android.os.IBinder
 import android.os.StrictMode
 import android.support.v7.app.NotificationCompat
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
+import com.github.pwittchen.reactivenetwork.library.Connectivity
+import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork
 import com.orhanobut.logger.Logger
 import com.v2ray.actinium.R
 import com.v2ray.actinium.event.*
@@ -21,6 +24,9 @@ import com.v2ray.actinium.util.configFile
 import go.libv2ray.Libv2ray
 import org.jetbrains.anko.notificationManager
 import org.jetbrains.anko.startService
+import rx.Subscription
+import rx.android.schedulers.AndroidSchedulers
+import rx.schedulers.Schedulers
 import java.io.File
 
 class V2RayService : Service() {
@@ -53,6 +59,7 @@ class V2RayService : Service() {
     private val v2rayPoint = Libv2ray.NewV2RayPoint()
     private var vpnService: V2RayVpnService? = null
     private val v2rayCallback = V2RayCallback()
+    private var connectivitySubscription: Subscription? = null
     private val stopV2RayReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
             stopV2Ray()
@@ -100,12 +107,26 @@ class V2RayService : Service() {
                 }
 
         registerReceiver(stopV2RayReceiver, IntentFilter(ACTION_STOP_V2RAY))
+
+        connectivitySubscription = ReactiveNetwork.observeNetworkConnectivity(this.applicationContext)
+                .subscribeOn(Schedulers.io())
+                .skip(1)
+                .filter(Connectivity.hasState(NetworkInfo.State.CONNECTED))
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe {
+                    if (v2rayPoint.isRunning)
+                        v2rayPoint.NetworkInterrupted()
+                }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         Bus.unregister(this)
         unregisterReceiver(stopV2RayReceiver)
+        connectivitySubscription?.let {
+            it.unsubscribe()
+            connectivitySubscription = null
+        }
         isServiceRunning = false
     }
 

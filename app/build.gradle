@@ -79,6 +79,8 @@ dependencies {
     }
 
     compile 'com.google.code.gson:gson:2.7'
+
+    compile 'com.github.pwittchen:reactivenetwork:0.5.1'
 }
 
 buildscript {
