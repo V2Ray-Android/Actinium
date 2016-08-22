@@ -1,0 +1,115 @@
+{
+  "port": 10808,
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbound": {
+    "protocol": "socks",
+    "listen": "127.0.0.1",
+    "settings": {
+      "auth": "noauth",
+      "udp": true
+    }
+  },
+  "inboundDetour": [],
+  "outbound": {
+    "protocol": "vmess",
+    "settings": {
+      "vnext": [
+        {
+          "address": "v2ray.cool",
+          "port": 10086,
+          "users": [
+            {
+              "id": "23ad6b10-8d1a-40f7-8ad0-e3e35cd38297",
+              "alterId": 64
+            }
+          ]
+        }
+      ]
+    },
+    "streamSettings": {
+      "network": "tcp",
+      "security": "none",
+      "tlsSettings": {
+        "allowInsecure": true
+      }
+    }
+  },
+  "outboundDetour": [
+    {
+      "protocol": "freedom",
+      "settings": {},
+      "tag": "direct"
+    }
+  ],
+  "dns": {
+    "servers": [
+      "8.8.8.8",
+      "8.8.4.4",
+      "localhost"
+    ]
+  },
+  "routing": {
+    "strategy": "rules",
+    "settings": {
+      "rules": [
+        {
+          "type": "field",
+          "ip": [
+            "0.0.0.0/8",
+            "10.0.0.0/8",
+            "100.64.0.0/10",
+            "127.0.0.0/8",
+            "169.254.0.0/16",
+            "172.16.0.0/12",
+            "192.0.0.0/24",
+            "192.0.2.0/24",
+            "192.168.0.0/16",
+            "198.18.0.0/15",
+            "198.51.100.0/24",
+            "203.0.113.0/24",
+            "::1/128",
+            "fc00::/7",
+            "fe80::/10"
+          ],
+          "outboundTag": "direct"
+        }
+      ]
+    }
+  },
+  "transport": {},
+  "#lib2ray": {
+    "enabled": true,
+    "listener": {
+      "onUp": "#none",
+      "onDown": "#none"
+    },
+    "env": [
+      "V2RaySocksPort=10808"
+    ],
+    "render": [],
+    "escort": [],
+    "vpnservice": {
+      "Target": "${datadir}tun2socks",
+      "Args": [
+        "--netif-ipaddr",
+        "26.26.26.2",
+        "--netif-netmask",
+        "255.255.255.0",
+        "--socks-server-addr",
+        "127.0.0.1:$V2RaySocksPort",
+        "--tunfd",
+        "3",
+        "--tunmtu",
+        "1500",
+        "--sock-path",
+        "/dev/null",
+        "--loglevel",
+        "4",
+        "--enable-udprelay"
+      ],
+      "VPNSetupArg": "m,1500 a,26.26.26.1,24 r,0.0.0.0,0"
+    }
+  }
+}

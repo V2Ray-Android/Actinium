@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Actinium</string>
+    <string name="notification_action_stop_v2ray">停止V2Ray</string>
+    <string name="notification_content_text">正在使用的配置: %1$s</string>
+    <string name="notification_content_title">V2Ray正在运行</string>
+    <string name="menu_item_add_config">添加配置</string>
+    <string name="msg_dialog_convert_config">改配置文件与Android版本的V2Ray不兼容，点击确定进行转化。</string>
+    <string name="title_dialog_convert_config">转化配置文件</string>
+    <string name="title_file_chooser">选择文件以导入</string>
+    <string name="toast_config_file_invalid">配置文件无效</string>
+    <string name="toast_require_file_manager">请安装一个文件管理器</string>
+    <string name="title_dialog_input_config_name">请输入配置名称</string>
+    <string name="title_pref_start_on_boot">开机自启</string>
+    <string name="title_activity_settings">设定</string>
+    <string name="summary_pref_start_on_boot">在开机时启动V2Ray</string>
+    <string name="service_has_been_started">已开启服务</string>
+    <string name="service_has_been_stopped">已停止服务</string>
+    <string name="menu_item_del_config">删除配置</string>
+</resources>
