@@ -84,30 +84,31 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
                 notifyDataSetChanged()
             }
 
-            holder.bg.backgroundResource = if (selectedConfigs.contains(name))
+            holder.itemView.backgroundResource = if (selectedConfigs.contains(name))
                 R.color.bg_item_selected else Color.TRANSPARENT
-        } else if (changeable) {
-            holder.radio.isEnabled = true
-            holder.bg.backgroundColor = Color.TRANSPARENT
-            holder.radio.onClick {
-                preference.edit().putString(ConfigManager.PREF_CURR_CONFIG, name).apply()
-                notifyDataSetChanged()
-            }
-
-            holder.infoContainer.onLongClick {
-                if (holder.radio.isChecked) return@onLongClick false
-                actionMode = activity.supportActionBar?.startActionMode(actionModeCallback)
-                selectedConfigs.add(name)
-                notifyDataSetChanged()
-                true
-            }
-
+        } else {
             holder.infoContainer.onClick {
                 holder.infoContainer.context.startActivity<TextActivity>("title" to name, "text" to conf)
             }
-        } else {
-            holder.radio.isEnabled = false
-            holder.bg.backgroundColor = Color.rgb(238, 238, 238)
+            holder.itemView.backgroundColor = Color.TRANSPARENT
+
+            if (changeable) {
+                holder.radio.isEnabled = true
+                holder.radio.onClick {
+                    preference.edit().putString(ConfigManager.PREF_CURR_CONFIG, name).apply()
+                    notifyDataSetChanged()
+                }
+
+                holder.infoContainer.onLongClick {
+                    if (holder.radio.isChecked) return@onLongClick false
+                    actionMode = activity.supportActionBar?.startActionMode(actionModeCallback)
+                    selectedConfigs.add(name)
+                    notifyDataSetChanged()
+                    true
+                }
+            } else {
+                holder.radio.isEnabled = false
+            }
         }
     }
 
@@ -126,6 +127,5 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
         val name = itemView.tv_name!!
         val address = itemView.tv_address!!
         val infoContainer = itemView.info_container!!
-        val bg = itemView.item_bg
     }
 }

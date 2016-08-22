@@ -69,8 +69,6 @@ dependencies {
 
     compile 'com.orhanobut:logger:1.15'
 
-    compile 'com.github.rey5137:material:1.2.4'
-
     compile('commons-validator:commons-validator:1.5.1') {
         exclude group: 'commons-logging'
         exclude group: 'commons-collections'

@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.res.ResourcesCompat
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
@@ -41,9 +40,9 @@ class MainActivity : BaseActivity() {
         set(value) {
             field = value
             if (value) {
-                fab.setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_check_24dp, null), false)
+                fab.imageResource = R.drawable.ic_check_24dp
             } else {
-                fab.setIcon(ResourcesCompat.getDrawable(resources, R.drawable.ic_action_logo, null), false)
+                fab.imageResource = R.drawable.ic_action_logo
             }
 
         }

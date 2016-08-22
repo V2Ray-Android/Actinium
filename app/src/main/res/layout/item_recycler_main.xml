@@ -6,7 +6,7 @@
     android:gravity="center_vertical"
     android:padding="10dp">
 
-    <com.rey.material.widget.RadioButton
+    <android.support.v7.widget.AppCompatRadioButton
         android:id="@+id/btn_radio"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
