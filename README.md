@@ -1,4 +1,4 @@
-[![GitHub version](https://badge.fury.io/gh/V2Ray-Android%2FActinium.svg)](https://github.com/V2Ray-Android/Actinium/releases) ![license](http://img.shields.io/badge/license-Apache2-brightgreen.svg) ![platform](http://img.shields.io/badge/platform-Android-blue.svg)
+[![GitHub version](https://badge.fury.io/gh/V2Ray-Android%2FActinium.svg)](https://github.com/V2Ray-Android/Actinium/releases) ![license](http://img.shields.io/badge/license-GPLv3-brightgreen.svg) ![platform](http://img.shields.io/badge/platform-Android-blue.svg)
 # Actinium
 
 * If you don't know what is V2Ray, please see to [V2Ray official website](http://www.v2ray.com).
