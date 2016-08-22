@@ -25,3 +25,9 @@
 
 # Gson specific classes
 -keep class sun.misc.Unsafe { *; }
+
+-dontwarn org.apache.commons.**
+-keep class org.apache.commons.** { *;}
+
+-dontwarn rx.**
+-keep class rx.** { *;}
