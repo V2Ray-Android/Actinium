@@ -28,6 +28,7 @@ import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
+import java.util.concurrent.TimeUnit
 
 class V2RayService : Service() {
     companion object {
@@ -112,6 +113,7 @@ class V2RayService : Service() {
                 .subscribeOn(Schedulers.io())
                 .skip(1)
                 .filter(Connectivity.hasState(NetworkInfo.State.CONNECTED))
+                .throttleWithTimeout(3, TimeUnit.SECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     if (v2rayPoint.isRunning)
