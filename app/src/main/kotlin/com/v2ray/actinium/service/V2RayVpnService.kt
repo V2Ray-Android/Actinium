@@ -1,16 +1,23 @@
 package com.v2ray.actinium.service
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.VpnService
+import android.os.Build
 import android.os.ParcelFileDescriptor
 import android.util.Log
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
+import com.orhanobut.logger.Logger
 import com.v2ray.actinium.event.V2RayStatusEvent
 import com.v2ray.actinium.event.VpnServiceSendSelfEvent
 import com.v2ray.actinium.event.VpnServiceStatusEvent
+import com.v2ray.actinium.ui.BlacklistActivity
+import com.v2ray.actinium.ui.SettingsActivity
 import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.configFile
+import org.jetbrains.anko.defaultSharedPreferences
+import java.util.*
 
 class V2RayVpnService : VpnService() {
 
@@ -60,6 +67,17 @@ class V2RayVpnService : VpnService() {
         val dnsServers = ConfigUtil.readDnsServersFromConfig(conf, "8.8.8.8", "8.8.4.4")
         for (dns in dnsServers)
             builder.addDnsServer(dns)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                defaultSharedPreferences.getBoolean(SettingsActivity.PREF_BLACKLIST, false)) {
+            val blacklist = defaultSharedPreferences.getStringSet(BlacklistActivity.PREF_BLACKLIST_SET, HashSet<String>())
+            for (app in blacklist)
+                try {
+                    builder.addDisallowedApplication(app)
+                } catch (e: PackageManager.NameNotFoundException) {
+                    Logger.d(e)
+                }
+        }
 
         // Close the old interface since the parameters have been changed.
         try {

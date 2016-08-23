@@ -4,4 +4,15 @@
         android:key="pref_start_on_boot"
         android:summary="@string/summary_pref_start_on_boot"
         android:title="@string/title_pref_start_on_boot" />
+
+    <CheckBoxPreference
+        android:key="pref_blacklist"
+        android:summary="@string/summary_pref_blacklist"
+        android:title="@string/title_pref_blacklist" />
+
+    <Preference
+        android:dependency="pref_blacklist"
+        android:key="pref_edit_blacklist"
+        android:summary="@string/summary_pref_edit_blacklist"
+        android:title="@string/title_pref_edit_blacklist" />
 </PreferenceScreen>

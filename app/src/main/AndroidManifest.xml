@@ -34,6 +34,10 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings" />
 
+        <activity
+            android:name=".ui.BlacklistActivity"
+            android:label="@string/title_activity_blacklist" />
+
         <service
             android:name=".service.V2RayService"
             android:enabled="true"
