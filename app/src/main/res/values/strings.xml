@@ -21,4 +21,5 @@
     <string name="summary_pref_edit_blacklist">Edit blacklist</string>
     <string name="title_pref_edit_blacklist">Edit the blacklist</string>
     <string name="title_activity_blacklist">Blacklist</string>
+    <string name="toast_permission_denied">Unable to obtain the permission</string>
 </resources>

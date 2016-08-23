@@ -3,17 +3,16 @@ package com.v2ray.actinium.ui
 import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.support.design.widget.Snackbar
-import android.support.v4.app.ActivityCompat
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import com.eightbitlab.rxbus.Bus
 import com.eightbitlab.rxbus.registerInBus
+import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.actinium.R
 import com.v2ray.actinium.event.V2RayStatusEvent
 import com.v2ray.actinium.event.VpnPrepareEvent
@@ -23,7 +22,7 @@ import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
-import java.io.FileInputStream
+import java.io.File
 import java.io.InputStream
 
 class MainActivity : BaseActivity() {
@@ -89,10 +88,7 @@ class MainActivity : BaseActivity() {
             adapter.changeable = !it
         }
 
-        if (intent.action == Intent.ACTION_SEND) {
-            val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
-            handlerNewConfigFile(FileInputStream(uri.path))
-        }
+        importConfigFromIntent(intent)
     }
 
     override fun onDestroy() {
@@ -116,22 +112,9 @@ class MainActivity : BaseActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            REQUEST_CODE_PERMISSION_STORAGE -> {
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    importConfigFromFile()
-            }
-        }
-    }
-
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (intent.action == Intent.ACTION_SEND) {
-            val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
-            handlerNewConfigFile(FileInputStream(uri.path))
-        }
+        importConfigFromIntent(intent)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -190,6 +173,24 @@ class MainActivity : BaseActivity() {
 
     }
 
+    private fun importConfigFromIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND) {
+            val uri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
+            val file = File(uri.path)
+            if (file.canRead())
+                handlerNewConfigFile(file.inputStream())
+            else
+                RxPermissions.getInstance(this)
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        .subscribe {
+                            if (it)
+                                handlerNewConfigFile(file.inputStream())
+                            else
+                                toast(R.string.toast_permission_denied)
+                        }
+        }
+    }
+
     private fun handlerNewConfigFile(ins: InputStream) {
         val rawConfig = ins.bufferedReader().readText()
 
@@ -215,24 +216,16 @@ class MainActivity : BaseActivity() {
     }
 
     private fun importConfigFromFile() {
-        val permission = Manifest.permission.READ_EXTERNAL_STORAGE
-        val check = ActivityCompat.checkSelfPermission(this, permission)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+        intent.type = "*/*"
+        intent.addCategory(Intent.CATEGORY_OPENABLE)
 
-        if (check == PackageManager.PERMISSION_GRANTED) {
-            val intent = Intent(Intent.ACTION_GET_CONTENT)
-            intent.type = "*/*"
-            intent.addCategory(Intent.CATEGORY_OPENABLE)
-
-            try {
-                startActivityForResult(
-                        Intent.createChooser(intent, getString(R.string.title_file_chooser)),
-                        REQUEST_CODE_FILE_SELECT)
-            } catch (ex: android.content.ActivityNotFoundException) {
-                toast(R.string.toast_require_file_manager)
-            }
-        } else {
-            ActivityCompat.requestPermissions(this, arrayOf(permission),
-                    REQUEST_CODE_PERMISSION_STORAGE)
+        try {
+            startActivityForResult(
+                    Intent.createChooser(intent, getString(R.string.title_file_chooser)),
+                    REQUEST_CODE_FILE_SELECT)
+        } catch (ex: android.content.ActivityNotFoundException) {
+            toast(R.string.toast_require_file_manager)
         }
     }
 

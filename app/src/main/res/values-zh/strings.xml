@@ -22,4 +22,5 @@
     <string name="summary_pref_blacklist">加入黑名单的应用将不会通过V2Ray访问互联网（直接连接）</string>
     <string name="title_pref_blacklist">黑名单模式</string>
     <string name="title_pref_edit_blacklist">编辑黑名单</string>
+    <string name="toast_permission_denied">无法取得权限</string>
 </resources>
