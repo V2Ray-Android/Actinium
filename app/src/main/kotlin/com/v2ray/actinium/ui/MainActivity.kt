@@ -31,8 +31,6 @@ class MainActivity : BaseActivity() {
     companion object {
         private const val REQUEST_CODE_VPN_PREPARE = 0
         private const val REQUEST_CODE_FILE_SELECT = 1
-
-        private const val REQUEST_CODE_PERMISSION_STORAGE = 2
     }
 
     var fabChecked = false
@@ -48,7 +46,7 @@ class MainActivity : BaseActivity() {
 
     private lateinit var vpnPrepareCallback: (Boolean) -> Unit
 
-    private val adapter by lazy { MainRecyclerAdapter(this, ConfigManager.configs) }
+    private val adapter by lazy { MainRecyclerAdapter(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

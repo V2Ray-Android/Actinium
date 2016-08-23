@@ -3,22 +3,28 @@ package com.v2ray.actinium.ui
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
+import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.RecyclerView
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.v2ray.actinium.R
+import com.v2ray.actinium.extension.alert
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
+import com.v2ray.actinium.util.currConfigName
 import kotlinx.android.synthetic.main.item_recycler_main.view.*
 import org.jetbrains.anko.*
 import java.util.*
 
-class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<out String>) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>() {
+class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>() {
     private val preference = activity.defaultSharedPreferences
+    private lateinit var configs: Array<out String>
 
     var actionMode: ActionMode? = null
+    var renameItem: MenuItem? = null
+    var delItem: MenuItem? = null
 
     val selectedConfigs by lazy { HashSet<String>() }
 
@@ -41,20 +47,56 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
                     actionMode?.finish()
                     true
                 }
+                R.id.rename_config -> {
+                    activity.alert(R.string.title_dialog_input_config_name) {
+                        val oriName = selectedConfigs.single()
+
+                        val input = AppCompatEditText(activity)
+                        input.singleLine = true
+                        input.setText(oriName)
+                        customView(input)
+
+                        positiveButton(android.R.string.ok) {
+                            val newName = input.text.toString()
+                            val newFile = ConfigManager.getConfigFileByName(newName)
+                            val oriFile = ConfigManager.getConfigFileByName(oriName)
+
+                            if (oriFile.renameTo(newFile) &&
+                                    activity.currConfigName == oriName)
+                                preference.edit().putString(ConfigManager.PREF_CURR_CONFIG, newName).apply()
+
+                            updateConfigList()
+                            actionMode?.finish()
+                        }
+
+                        negativeButton(android.R.string.cancel)
+
+                        show()
+                    }
+                    true
+                }
                 else -> false
             }
 
             override fun onCreateActionMode(mode: ActionMode?, menu: Menu?): Boolean {
                 activity.menuInflater.inflate(R.menu.action_main_recycler, menu)
+                renameItem = menu?.findItem(R.id.rename_config)
+                delItem = menu?.findItem(R.id.del_config)
                 return true
             }
 
             override fun onDestroyActionMode(mode: ActionMode?) {
                 actionMode = null
+                renameItem = null
+                delItem = null
                 selectedConfigs.clear()
                 notifyDataSetChanged()
             }
         }
+    }
+
+    init {
+        updateConfigList()
     }
 
     override fun getItemCount() = configs.size
@@ -65,14 +107,12 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
 
         holder.name.text = name
         holder.address.text = ConfigUtil.readAddressFromConfig(conf)
-        holder.radio.isChecked = name == preference.getString(ConfigManager.PREF_CURR_CONFIG, "")
+        holder.radio.isChecked = name == activity.currConfigName
 
         if (actionMode != null) {
             holder.radio.isEnabled = false
 
             holder.infoContainer.onClick {
-                if (holder.radio.isChecked) return@onClick
-
                 if (selectedConfigs.contains(name)) {
                     selectedConfigs.remove(name)
 
@@ -81,6 +121,7 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
                 } else
                     selectedConfigs.add(name)
 
+                updateActionModeStatus()
                 notifyDataSetChanged()
             }
 
@@ -100,9 +141,9 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
                 }
 
                 holder.infoContainer.onLongClick {
-                    if (holder.radio.isChecked) return@onLongClick false
                     actionMode = activity.supportActionBar?.startActionMode(actionModeCallback)
                     selectedConfigs.add(name)
+                    updateActionModeStatus()
                     notifyDataSetChanged()
                     true
                 }
@@ -118,8 +159,13 @@ class MainRecyclerAdapter(val activity: AppCompatActivity, var configs: Array<ou
     }
 
     fun updateConfigList() {
-        configs = ConfigManager.configs
+        configs = ConfigManager.configs.sortedArray()
         notifyDataSetChanged()
+    }
+
+    fun updateActionModeStatus() {
+        renameItem?.isVisible = selectedConfigs.size == 1
+        delItem?.isVisible = !selectedConfigs.contains(activity.currConfigName)
     }
 
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

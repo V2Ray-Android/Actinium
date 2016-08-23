@@ -20,7 +20,7 @@ import com.orhanobut.logger.Logger
 import com.v2ray.actinium.R
 import com.v2ray.actinium.event.*
 import com.v2ray.actinium.ui.MainActivity
-import com.v2ray.actinium.util.configFile
+import com.v2ray.actinium.util.currConfigFile
 import go.libv2ray.Libv2ray
 import org.jetbrains.anko.notificationManager
 import org.jetbrains.anko.startService
@@ -167,7 +167,7 @@ class V2RayService : Service() {
         if (!v2rayPoint.isRunning) {
             v2rayPoint.callbacks = v2rayCallback
             v2rayPoint.vpnSupportSet = v2rayCallback
-            v2rayPoint.configureFile = configFile.absolutePath
+            v2rayPoint.configureFile = currConfigFile.absolutePath
             v2rayPoint.RunLoop()
         }
     }

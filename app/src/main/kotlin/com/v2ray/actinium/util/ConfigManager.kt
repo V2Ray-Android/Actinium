@@ -31,5 +31,6 @@ object ConfigManager {
 
 }
 
-val Context.configFile: File get() = File(ConfigManager.configFileDir,
-        defaultSharedPreferences.getString(ConfigManager.PREF_CURR_CONFIG, ""))
+val Context.currConfigFile: File get() = File(ConfigManager.configFileDir, currConfigName)
+
+val Context.currConfigName: String get() = defaultSharedPreferences.getString(ConfigManager.PREF_CURR_CONFIG, "")

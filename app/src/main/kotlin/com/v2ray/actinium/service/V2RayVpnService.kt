@@ -15,7 +15,7 @@ import com.v2ray.actinium.event.VpnServiceStatusEvent
 import com.v2ray.actinium.ui.BlacklistActivity
 import com.v2ray.actinium.ui.SettingsActivity
 import com.v2ray.actinium.util.ConfigUtil
-import com.v2ray.actinium.util.configFile
+import com.v2ray.actinium.util.currConfigFile
 import org.jetbrains.anko.defaultSharedPreferences
 import java.util.*
 
@@ -63,7 +63,7 @@ class V2RayVpnService : VpnService() {
 
         }
 
-        val conf = configFile.readText()
+        val conf = currConfigFile.readText()
         val dnsServers = ConfigUtil.readDnsServersFromConfig(conf, "8.8.8.8", "8.8.4.4")
         for (dns in dnsServers)
             builder.addDnsServer(dns)

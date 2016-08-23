@@ -23,4 +23,5 @@
     <string name="title_pref_blacklist">黑名单模式</string>
     <string name="title_pref_edit_blacklist">编辑黑名单</string>
     <string name="toast_permission_denied">无法取得权限</string>
+    <string name="menu_item_rename_config">重命名配置</string>
 </resources>
