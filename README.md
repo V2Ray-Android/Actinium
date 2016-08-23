@@ -21,6 +21,11 @@ NOTICE: Instant Run in Android Studio prior to version 2.2 is incompatible with 
 
 Module "libv2ray" is build from [AndroidLibV2ray](https://github.com/V2Ray-Android/AndroidLibV2ray)
 
+## Donate
+
+If you like Actinium and want to support the developer of this repo, consider buying me a cup of coffee.
+BTC: 191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB
+
 ## License
 ```
 Copyright 2016 V2Ray-Android
