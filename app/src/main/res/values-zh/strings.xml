@@ -25,4 +25,9 @@
     <string name="toast_permission_denied">无法取得权限</string>
     <string name="menu_item_rename_config">重命名配置</string>
     <string name="summary_pref_blacklist_pre_lollipop">黑名单模式仅支持Android Lollipop及更改</string>
+    <string name="summary_pref_donate">如果你喜欢这个应用，可以考虑给我买杯咖啡。BTC：191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB（点击已复制）</string>
+    <string name="title_about">关于</string>
+    <string name="title_pref_donate">捐赠</string>
+    <string name="title_settings">设置</string>
+    <string name="toast_copied_to_clipboard">已复制到剪贴板</string>
 </resources>

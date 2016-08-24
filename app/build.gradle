@@ -84,6 +84,8 @@ dependencies {
     compile 'com.github.pwittchen:reactivenetwork:0.5.1'
 
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+
+    compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
 }
 
 buildscript {
