@@ -85,14 +85,17 @@ object ConfigUtil {
             return defaultDns
         val servers = dns.optJSONArray("servers")
 
-        val ret = LinkedList<String>()
+        val ret = LinkedHashSet<String>()
         for (i in 0..servers.length() - 1) {
             val e = servers.getString(i)
+
             if (InetAddressValidator.getInstance().isValid(e))
                 ret.add(e)
             else if (e == "localhost")
                 NetworkUtil.getDnsServers()?.let { ret.addAll(it) }
         }
+
+        ret.addAll(defaultDns)
 
         return ret.toTypedArray()
     }
