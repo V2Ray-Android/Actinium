@@ -18,6 +18,7 @@
     <string name="menu_item_del_config">Delete config</string>
     <string name="title_pref_blacklist">Blacklist mode</string>
     <string name="summary_pref_blacklist">Apps which added to the blacklist will access internet without V2Ray (connect directly)</string>
+    <string name="summary_pref_blacklist_pre_lollipop">Blacklist mode only support Android Lollipop or higher</string>
     <string name="summary_pref_edit_blacklist">Edit blacklist</string>
     <string name="title_pref_edit_blacklist">Edit the blacklist</string>
     <string name="title_activity_blacklist">Blacklist</string>

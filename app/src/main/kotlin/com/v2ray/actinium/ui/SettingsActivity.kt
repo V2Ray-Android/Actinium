@@ -44,6 +44,7 @@ class SettingsActivity : BaseActivity() {
                     }
                 }
             } else {
+                blacklist.summary = getString(R.string.summary_pref_blacklist_pre_lollipop)
                 blacklist.isEnabled = false
                 editBlacklist.isEnabled = false
             }
