@@ -21,6 +21,8 @@ class BlacklistActivity : BaseActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_blacklist)
 
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
         recycler_view.adapter = adapter
     }
 
