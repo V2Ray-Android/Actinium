@@ -6,18 +6,20 @@
 
 ## How to Use
 
-1. Download precompiled apk in [release](https://github.com/V2Ray-Android/Actinium/releases)
+<a href="https://play.google.com/store/apps/details?id=com.v2ray.actinium">
+<img alt="Get it on Google Play" src="https://play.google.com/intl/en_us/badges/images/generic/en_badge_web_generic.png" width="165" height="64" />
+</a>
+
+1. Get it on Google Play or download precompiled apk in [release](https://github.com/V2Ray-Android/Actinium/releases)
 2. Install it on Android.
-3. Click button "Add Config" on the App Bar if you have, or it view use default config.
+3. Click button "Add Config" in the option menu, and choose the config file or share the config file to Actinium if you have, or it will use default config.
 4. Click the FloatingActionButton, and accept the request of permission to VPN.
 5. Enjoy internet with freedom.
 
 ## Build
 
 1. `git clone https://github.com/V2Ray-Android/Actinium.git`
-3. Open in Android Studio or Intellij IDEA.
-
-NOTICE: Instant Run in Android Studio prior to version 2.2 is incompatible with Firebase, please disable instant run or upgrade to the Android Studio 2.2 preview.
+2. Open in Android Studio or Intellij IDEA.
 
 Module "libv2ray" is build from [AndroidLibV2ray](https://github.com/V2Ray-Android/AndroidLibV2ray)
 
