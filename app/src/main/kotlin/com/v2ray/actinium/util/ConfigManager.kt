@@ -16,10 +16,10 @@ object ConfigManager {
 
     fun inject(app: ActiniumApplication) {
         this.app = app
-        if (!configFileDir.exists() || !configFileDir.isDirectory) {
-            configFileDir.mkdirs()
+        if (app.firstRun) {
+            if (!configFileDir.exists() || !configFileDir.isDirectory)
+                configFileDir.mkdirs()
             AssetsUtil.copyAsset(app.assets, "conf_default.json", File(configFileDir, "default").absolutePath)
-            app.defaultSharedPreferences.edit().putString(PREF_CURR_CONFIG, "default").apply()
         }
     }
 
@@ -33,4 +33,4 @@ object ConfigManager {
 
 val Context.currConfigFile: File get() = File(ConfigManager.configFileDir, currConfigName)
 
-val Context.currConfigName: String get() = defaultSharedPreferences.getString(ConfigManager.PREF_CURR_CONFIG, "")
+val Context.currConfigName: String get() = defaultSharedPreferences.getString(ConfigManager.PREF_CURR_CONFIG, "default")
