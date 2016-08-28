@@ -25,8 +25,9 @@ Module "libv2ray" is build from [AndroidLibV2ray](https://github.com/V2Ray-Andro
 
 ## Donate
 
-If you like Actinium and want to support the developer of this repo, consider buying me a cup of coffee.
-BTC: 191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB
+If you like Actinium and want to support the developer of this repo, consider buying me a cup of coffee.  
+BTC: [191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB](https://blockchain.info/address/191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB)  
+[Donators](https://github.com/V2Ray-Android/Actinium/blob/master/DONATORS.md)
 
 ## License
 ```
