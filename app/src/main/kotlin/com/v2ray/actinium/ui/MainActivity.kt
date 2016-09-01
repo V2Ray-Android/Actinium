@@ -55,13 +55,13 @@ class MainActivity : BaseActivity() {
         fab.setOnClickListener {
             if (fabChecked) {
                 V2RayService.stopV2Ray()
-                Snackbar.make(it, R.string.service_has_been_stopped, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(it, R.string.toast_v2ray_is_stopping, Snackbar.LENGTH_SHORT).show()
             } else {
                 if (adapter.actionMode != null)
                     adapter.actionMode?.finish()
 
                 V2RayService.startV2Ray(ctx)
-                Snackbar.make(it, R.string.service_has_been_started, Snackbar.LENGTH_SHORT).show()
+                Snackbar.make(it, R.string.toast_v2ray_is_starting, Snackbar.LENGTH_SHORT).show()
             }
         }
 

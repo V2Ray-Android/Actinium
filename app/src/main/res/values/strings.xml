@@ -13,8 +13,8 @@
     <string name="title_pref_start_on_boot">Start on boot</string>
     <string name="summary_pref_start_on_boot">Start V2Ray on startup</string>
     <string name="title_activity_settings">Settings</string>
-    <string name="service_has_been_started">Service has been started</string>
-    <string name="service_has_been_stopped">Service has been stopped</string>
+    <string name="toast_v2ray_is_starting">V2Ray is starting</string>
+    <string name="toast_v2ray_is_stopping">V2Ray is stopping</string>
     <string name="menu_item_del_config">Delete config</string>
     <string name="title_pref_blacklist">Blacklist mode</string>
     <string name="summary_pref_blacklist">Apps which added to the blacklist will access internet without V2Ray (connect directly)</string>

@@ -14,8 +14,8 @@
     <string name="title_pref_start_on_boot">开机自启</string>
     <string name="title_activity_settings">设定</string>
     <string name="summary_pref_start_on_boot">在开机时启动V2Ray</string>
-    <string name="service_has_been_started">已开启服务</string>
-    <string name="service_has_been_stopped">已停止服务</string>
+    <string name="toast_v2ray_is_starting">正在启动V2Ray</string>
+    <string name="toast_v2ray_is_stopping">正在停止V2Ray</string>
     <string name="menu_item_del_config">删除配置</string>
     <string name="title_activity_blacklist">黑名单</string>
     <string name="summary_pref_edit_blacklist">编辑黑名单</string>
