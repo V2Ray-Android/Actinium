@@ -21,6 +21,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_EDIT_BYPASS_LIST = "pref_edit_bypass_list"
         const val PREF_LICENSES = "pref_licenses"
         const val PREF_DONATE = "pref_donate"
+        const val PREF_FEEDBACK = "pref_feedback"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,6 +36,7 @@ class SettingsActivity : BaseActivity() {
         val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BYPASS_LIST) }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
         val donate: Preference by lazy { findPreference(PREF_DONATE) }
+        val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
 
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
@@ -50,8 +52,12 @@ class SettingsActivity : BaseActivity() {
             }
 
             donate.setOnPreferenceClickListener {
-                val uri = Uri.parse("https://blockchain.info/address/191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB")
-                startActivity(Intent(Intent.ACTION_VIEW, uri))
+                openUri("https://blockchain.info/address/191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB")
+                true
+            }
+
+            feedback.setOnPreferenceClickListener {
+                openUri("https://github.com/V2Ray-Android/Actinium/issues/new")
                 true
             }
 
@@ -72,6 +78,11 @@ class SettingsActivity : BaseActivity() {
                 blacklist.isEnabled = false
                 editBlacklist.isEnabled = false
             }
+        }
+
+        private fun openUri(uriString: String) {
+            val uri = Uri.parse(uriString)
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
     }
 }

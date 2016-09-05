@@ -27,5 +27,10 @@
             android:key="pref_donate"
             android:summary="@string/summary_pref_donate"
             android:title="@string/title_pref_donate" />
+
+        <Preference
+            android:key="pref_feedback"
+            android:summary="@string/summary_pref_feedback"
+            android:title="@string/title_pref_feedback" />
     </PreferenceCategory>
 </PreferenceScreen>

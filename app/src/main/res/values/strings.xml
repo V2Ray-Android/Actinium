@@ -30,4 +30,6 @@
     <string name="summary_pref_donate">If you like this app, consider buying me a cup of coffee. BTC: 191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB</string>
     <string name="toast_copied_to_clipboard">Copied to clipboard</string>
     <string name="msg_dialog_progress">Loading</string>
+    <string name="title_pref_feedback">Feedback</string>
+    <string name="summary_pref_feedback">Feedback enhancements or bugs to GitHub</string>
 </resources>
