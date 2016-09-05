@@ -23,6 +23,7 @@ import com.v2ray.actinium.util.ConfigUtil
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.InputStream
 
 class MainActivity : BaseActivity() {
@@ -103,8 +104,7 @@ class MainActivity : BaseActivity() {
             REQUEST_CODE_FILE_SELECT -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val uri = data!!.data
-                    val rawInputStream = contentResolver.openInputStream(uri)
-                    handlerNewConfigFile(rawInputStream)
+                    tryOpenStreamFromUri(uri)
                 }
             }
         }
@@ -137,6 +137,22 @@ class MainActivity : BaseActivity() {
             adapter.actionMode?.finish()
         else
             super.onBackPressed()
+    }
+
+    private fun tryOpenStreamFromUri(uri: Uri) {
+        try {
+            val rawInputStream = contentResolver.openInputStream(uri)
+            handlerNewConfigFile(rawInputStream)
+        } catch (e: FileNotFoundException) {
+            RxPermissions.getInstance(this)
+                    .request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    .subscribe {
+                        if (it)
+                            tryOpenStreamFromUri(uri)
+                        else
+                            toast(R.string.toast_permission_denied)
+                    }
+        }
     }
 
     private fun storeConfigFile(rawConfig: String, name: String) {
