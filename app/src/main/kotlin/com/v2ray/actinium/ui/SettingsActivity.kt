@@ -1,7 +1,7 @@
 package com.v2ray.actinium.ui
 
-import android.content.ClipData
-import android.content.ClipboardManager
+import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.preference.CheckBoxPreference
@@ -13,7 +13,6 @@ import com.v2ray.actinium.service.V2RayService
 import de.psdev.licensesdialog.LicensesDialogFragment
 import org.jetbrains.anko.act
 import org.jetbrains.anko.startActivity
-import org.jetbrains.anko.toast
 
 class SettingsActivity : BaseActivity() {
     companion object {
@@ -51,10 +50,8 @@ class SettingsActivity : BaseActivity() {
             }
 
             donate.setOnPreferenceClickListener {
-                val clipboard = act.getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-                val clip = ClipData.newPlainText("BTC", "191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB")
-                clipboard.primaryClip = clip
-                toast(R.string.toast_copied_to_clipboard)
+                val uri = Uri.parse("https://blockchain.info/address/191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB")
+                startActivity(Intent(Intent.ACTION_VIEW, uri))
                 true
             }
 
