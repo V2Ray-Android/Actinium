@@ -30,4 +30,5 @@
     <string name="title_settings">设置</string>
     <string name="toast_copied_to_clipboard">已复制到剪贴板</string>
     <string name="title_activity_bypass_list">直连列表</string>
+    <string name="msg_dialog_progress">正在加载</string>
 </resources>
