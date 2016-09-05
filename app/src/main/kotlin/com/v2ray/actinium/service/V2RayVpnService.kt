@@ -12,7 +12,7 @@ import com.orhanobut.logger.Logger
 import com.v2ray.actinium.event.V2RayStatusEvent
 import com.v2ray.actinium.event.VpnServiceSendSelfEvent
 import com.v2ray.actinium.event.VpnServiceStatusEvent
-import com.v2ray.actinium.ui.BlacklistActivity
+import com.v2ray.actinium.ui.BypassListActivity
 import com.v2ray.actinium.ui.SettingsActivity
 import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.currConfigFile
@@ -70,7 +70,7 @@ class V2RayVpnService : VpnService() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 defaultSharedPreferences.getBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
-            val blacklist = defaultSharedPreferences.getStringSet(BlacklistActivity.PREF_BLACKLIST_SET, HashSet<String>())
+            val blacklist = defaultSharedPreferences.getStringSet(BypassListActivity.PREF_BYPASS_LIST_SET, HashSet<String>())
             for (app in blacklist)
                 try {
                     builder.addDisallowedApplication(app)

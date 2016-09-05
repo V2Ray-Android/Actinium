@@ -35,7 +35,7 @@
             android:label="@string/title_activity_settings" />
 
         <activity
-            android:name=".ui.BlacklistActivity"
+            android:name=".ui.BypassListActivity"
             android:label="@string/title_activity_bypass_list" />
 
         <service

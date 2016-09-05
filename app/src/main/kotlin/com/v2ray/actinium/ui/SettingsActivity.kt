@@ -59,7 +59,7 @@ class SettingsActivity : BaseActivity() {
                 V2RayService.checkStatusEvent {
                     if (!it) {
                         editBlacklist.setOnPreferenceClickListener {
-                            startActivity<BlacklistActivity>()
+                            startActivity<BypassListActivity>()
                             true
                         }
                     } else {
