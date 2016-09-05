@@ -2,6 +2,7 @@ package com.v2ray.actinium.ui
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import com.dinuscxj.itemdecoration.LinearDividerItemDecoration
 import com.v2ray.actinium.R
 import com.v2ray.actinium.util.AppManagerUtil
 import kotlinx.android.synthetic.main.activity_bypass_list.*
@@ -22,6 +23,10 @@ class BypassListActivity : BaseActivity() {
         setContentView(R.layout.activity_bypass_list)
 
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        val dividerItemDecoration = LinearDividerItemDecoration(
+                this, LinearDividerItemDecoration.LINEAR_DIVIDER_VERTICAL)
+        recycler_view.addItemDecoration(dividerItemDecoration)
 
         val dialog = ProgressDialog(this)
         dialog.isIndeterminate = true

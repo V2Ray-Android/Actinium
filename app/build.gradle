@@ -86,6 +86,8 @@ dependencies {
     compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
 
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
+
+    compile 'com.dinuscxj:recycleritemdecoration:1.0.0'
 }
 
 buildscript {

@@ -6,7 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.v2ray.actinium.R
 import com.v2ray.actinium.util.AppInfo
-import kotlinx.android.synthetic.main.item_recycler_blacklist.view.*
+import kotlinx.android.synthetic.main.item_recycler_bypass_list.view.*
 import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.image
@@ -23,7 +23,7 @@ class BypassListRecyclerAdapter(val apps: List<AppInfo>, var blacklist: MutableS
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): AppViewHolder {
         return AppViewHolder(parent.context.layoutInflater
-                .inflate(R.layout.item_recycler_blacklist, parent, false))
+                .inflate(R.layout.item_recycler_bypass_list, parent, false))
     }
 
     inner class AppViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {

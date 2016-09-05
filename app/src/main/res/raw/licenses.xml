@@ -63,4 +63,10 @@
         <url>https://github.com/tbruyelle/RxPermissions</url>
         <license>Apache Software License 2.0</license>
     </notice>
+    <notice>
+        <name>RecyclerItemDecoration</name>
+        <url>https://github.com/dinuscxj/RecyclerItemDecoration</url>
+        <copyright>Copyright 2015-2019 dinus</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
 </notices>

@@ -7,8 +7,10 @@
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/icon"
-        android:layout_width="24dp"
-        android:layout_height="24dp" />
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:paddingLeft="10dp"
+        android:paddingStart="10dp" />
 
     <android.support.v7.widget.AppCompatTextView
         android:id="@+id/name"
