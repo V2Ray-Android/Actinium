@@ -36,7 +36,7 @@
 
         <activity
             android:name=".ui.BlacklistActivity"
-            android:label="@string/title_activity_blacklist" />
+            android:label="@string/title_activity_bypass_list" />
 
         <service
             android:name=".service.V2RayService"

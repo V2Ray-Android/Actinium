@@ -18,8 +18,8 @@ import org.jetbrains.anko.toast
 class SettingsActivity : BaseActivity() {
     companion object {
         const val PREF_START_ON_BOOT = "pref_start_on_boot"
-        const val PREF_BLACKLIST = "pref_blacklist"
-        const val PREF_EDIT_BLACKLIST = "pref_edit_blacklist"
+        const val PREF_PER_APP_PROXY = "pref_per_app_proxy"
+        const val PREF_EDIT_BYPASS_LIST = "pref_edit_bypass_list"
         const val PREF_LICENSES = "pref_licenses"
         const val PREF_DONATE = "pref_donate"
     }
@@ -32,8 +32,8 @@ class SettingsActivity : BaseActivity() {
     }
 
     class SettingsFragment : PreferenceFragment() {
-        val blacklist by lazy { findPreference(PREF_BLACKLIST) as CheckBoxPreference }
-        val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BLACKLIST) }
+        val blacklist by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
+        val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BYPASS_LIST) }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
         val donate: Preference by lazy { findPreference(PREF_DONATE) }
 
@@ -71,7 +71,7 @@ class SettingsActivity : BaseActivity() {
                     }
                 }
             } else {
-                blacklist.summary = getString(R.string.summary_pref_blacklist_pre_lollipop)
+                blacklist.summary = getString(R.string.summary_pref_per_app_proxy_pre_lollipop)
                 blacklist.isEnabled = false
                 editBlacklist.isEnabled = false
             }

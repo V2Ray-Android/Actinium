@@ -7,15 +7,15 @@
             android:title="@string/title_pref_start_on_boot" />
 
         <CheckBoxPreference
-            android:key="pref_blacklist"
-            android:summary="@string/summary_pref_blacklist"
-            android:title="@string/title_pref_blacklist" />
+            android:key="pref_per_app_proxy"
+            android:summary="@string/summary_pref_per_app_proxy"
+            android:title="@string/title_pref_per_app_proxy" />
 
         <Preference
-            android:dependency="pref_blacklist"
-            android:key="pref_edit_blacklist"
-            android:summary="@string/summary_pref_edit_blacklist"
-            android:title="@string/title_pref_edit_blacklist" />
+            android:dependency="pref_per_app_proxy"
+            android:key="pref_edit_bypass_list"
+            android:summary="@string/summary_pref_edit_bypass_list"
+            android:title="@string/title_pref_edit_bypass_list" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/title_about">

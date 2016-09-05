@@ -69,7 +69,7 @@ class V2RayVpnService : VpnService() {
             builder.addDnsServer(dns)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                defaultSharedPreferences.getBoolean(SettingsActivity.PREF_BLACKLIST, false)) {
+                defaultSharedPreferences.getBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
             val blacklist = defaultSharedPreferences.getStringSet(BlacklistActivity.PREF_BLACKLIST_SET, HashSet<String>())
             for (app in blacklist)
                 try {
