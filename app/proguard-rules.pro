@@ -31,3 +31,6 @@
 
 -dontwarn rx.**
 -keep class rx.** { *;}
+
+-dontwarn app.dinus.**
+-keep class app.dinus.** { *;}
