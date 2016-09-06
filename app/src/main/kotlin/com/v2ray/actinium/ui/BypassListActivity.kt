@@ -9,7 +9,6 @@ import kotlinx.android.synthetic.main.activity_bypass_list.*
 import org.jetbrains.anko.defaultSharedPreferences
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.util.*
 
 class BypassListActivity : BaseActivity() {
     companion object {
@@ -37,7 +36,7 @@ class BypassListActivity : BaseActivity() {
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    val blacklist = defaultSharedPreferences.getStringSet(PREF_BYPASS_LIST_SET, HashSet<String>())
+                    val blacklist = defaultSharedPreferences.getStringSet(PREF_BYPASS_LIST_SET, null)
                     adapter = BypassListRecyclerAdapter(it, blacklist)
                     recycler_view.adapter = adapter
                     dialog.dismiss()

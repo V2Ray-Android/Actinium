@@ -11,8 +11,11 @@ import org.jetbrains.anko.backgroundColor
 import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.image
 import org.jetbrains.anko.layoutInflater
+import java.util.*
 
-class BypassListRecyclerAdapter(val apps: List<AppInfo>, var blacklist: MutableSet<String>) : RecyclerView.Adapter<BypassListRecyclerAdapter.AppViewHolder>() {
+class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<String>?) : RecyclerView.Adapter<BypassListRecyclerAdapter.AppViewHolder>() {
+
+    val blacklist = if (blacklist == null) HashSet<String>() else HashSet<String>(blacklist)
 
     override fun onBindViewHolder(holder: AppViewHolder?, position: Int) {
         val appInfo = apps[position]
