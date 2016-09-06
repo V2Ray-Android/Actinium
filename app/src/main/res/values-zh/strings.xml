@@ -31,4 +31,6 @@
     <string name="toast_copied_to_clipboard">已复制到剪贴板</string>
     <string name="title_activity_bypass_list">直连列表</string>
     <string name="msg_dialog_progress">正在加载</string>
+    <string name="title_pref_feedback">反馈</string>
+    <string name="summary_pref_feedback">反馈改进或漏洞至GitHub</string>
 </resources>
