@@ -1,14 +1,11 @@
 package com.v2ray.actinium.ui
 
-import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.v2ray.actinium.R
 import com.v2ray.actinium.util.AppInfo
 import kotlinx.android.synthetic.main.item_recycler_bypass_list.view.*
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.backgroundResource
 import org.jetbrains.anko.image
 import org.jetbrains.anko.layoutInflater
 import java.util.*
@@ -35,6 +32,7 @@ class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<S
 
         val icon = itemView.icon!!
         val name = itemView.name!!
+        val checkBox = itemView.check_box!!
 
         fun bind(appInfo: AppInfo) {
             this.appInfo = appInfo
@@ -42,10 +40,11 @@ class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<S
             icon.image = appInfo.appIcon
             name.text = appInfo.appName
 
-            if (inBlacklist)
-                itemView.backgroundResource = R.color.bg_item_selected
-            else
-                itemView.backgroundColor = Color.TRANSPARENT
+            if (inBlacklist) {
+                checkBox.isChecked = true
+            } else {
+                checkBox.isChecked = false
+            }
 
             itemView.setOnClickListener(this)
         }
@@ -53,10 +52,10 @@ class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<S
         override fun onClick(v: View?) {
             if (inBlacklist) {
                 blacklist.remove(appInfo.packageName)
-                itemView.backgroundColor = Color.TRANSPARENT
+                checkBox.isChecked = false
             } else {
                 blacklist.add(appInfo.packageName)
-                itemView.backgroundResource = R.color.bg_item_selected
+                checkBox.isChecked = true
             }
         }
     }
