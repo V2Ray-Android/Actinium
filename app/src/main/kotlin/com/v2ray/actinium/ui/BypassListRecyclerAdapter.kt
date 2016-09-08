@@ -8,6 +8,7 @@ import com.v2ray.actinium.util.AppInfo
 import kotlinx.android.synthetic.main.item_recycler_bypass_list.view.*
 import org.jetbrains.anko.image
 import org.jetbrains.anko.layoutInflater
+import org.jetbrains.anko.textColor
 import java.util.*
 
 class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<String>?) : RecyclerView.Adapter<BypassListRecyclerAdapter.AppViewHolder>() {
@@ -45,6 +46,9 @@ class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<S
             } else {
                 checkBox.isChecked = false
             }
+
+            name.textColor = itemView.context.resources.getColor(if (appInfo.isSystemApp)
+                R.color.abc_color_highlight_material else R.color.abc_secondary_text_material_light)
 
             itemView.setOnClickListener(this)
         }
