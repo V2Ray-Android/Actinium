@@ -34,6 +34,7 @@ class BypassListActivity : BaseActivity() {
         dialog.show()
         AppManagerUtil.rxLoadNetworkAppList(this)
                 .subscribeOn(Schedulers.io())
+                .map { it.sortedBy { it.appName } }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     val blacklist = defaultSharedPreferences.getStringSet(PREF_BYPASS_LIST_SET, null)
