@@ -2,6 +2,8 @@ package com.v2ray.actinium.ui
 
 import android.app.ProgressDialog
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import com.dinuscxj.itemdecoration.LinearDividerItemDecoration
 import com.v2ray.actinium.R
 import com.v2ray.actinium.util.AppManagerUtil
@@ -49,5 +51,25 @@ class BypassListActivity : BaseActivity() {
         adapter?.let {
             defaultSharedPreferences.edit().putStringSet(PREF_BYPASS_LIST_SET, it.blacklist).apply()
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_bypass_list, menu)
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
+        R.id.select_all -> adapter?.let {
+            val pkgNames = it.apps.map { it.packageName }
+            if (it.blacklist.containsAll(pkgNames))
+                it.blacklist.clear()
+            else
+                it.blacklist.addAll(pkgNames)
+
+            it.notifyDataSetChanged()
+            true
+        } ?: false
+
+        else -> super.onOptionsItemSelected(item)
     }
 }
