@@ -22,6 +22,8 @@ import com.v2ray.actinium.event.*
 import com.v2ray.actinium.ui.MainActivity
 import com.v2ray.actinium.util.currConfigFile
 import go.libv2ray.Libv2ray
+import go.libv2ray.V2RayCallbacks
+import go.libv2ray.V2RayVPNServiceSupportsSet
 import org.jetbrains.anko.notificationManager
 import org.jetbrains.anko.startService
 import rx.Subscription
@@ -57,7 +59,7 @@ class V2RayService : Service() {
         }
     }
 
-    private val v2rayPoint = Libv2ray.NewV2RayPoint()
+    private val v2rayPoint = Libv2ray.newV2RayPoint()
     private var vpnService: V2RayVpnService? = null
     private val v2rayCallback = V2RayCallback()
     private var connectivitySubscription: Subscription? = null
@@ -117,7 +119,7 @@ class V2RayService : Service() {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
                     if (v2rayPoint.isRunning)
-                        v2rayPoint.NetworkInterrupted()
+                        v2rayPoint.networkInterrupted()
                 }
     }
 
@@ -150,13 +152,13 @@ class V2RayService : Service() {
                 if (it)
                     vpnCheckIsReady()
                 else
-                    v2rayPoint.StopLoop()
+                    v2rayPoint.stopLoop()
             })
             return
         }
 
         if (this.vpnService != null) {
-            v2rayPoint.VpnSupportReady()
+            v2rayPoint.vpnSupportReady()
             Bus.send(V2RayStatusEvent(true))
             showNotification()
         }
@@ -168,13 +170,13 @@ class V2RayService : Service() {
             v2rayPoint.callbacks = v2rayCallback
             v2rayPoint.vpnSupportSet = v2rayCallback
             v2rayPoint.configureFile = currConfigFile.absolutePath
-            v2rayPoint.RunLoop()
+            v2rayPoint.runLoop()
         }
     }
 
     private fun stopV2Ray() {
         if (v2rayPoint.isRunning) {
-            v2rayPoint.StopLoop()
+            v2rayPoint.stopLoop()
         }
         vpnService = null
         Bus.send(V2RayStatusEvent(false))
@@ -215,21 +217,21 @@ class V2RayService : Service() {
         notificationManager.cancel(NOTIFICATION_ID)
     }
 
-    private inner class V2RayCallback : Libv2ray.V2RayCallbacks, Libv2ray.V2RayVPNServiceSupportsSet {
-        override fun Shutdown() = 0L
+    private inner class V2RayCallback : V2RayCallbacks, V2RayVPNServiceSupportsSet {
+        override fun shutdown() = 0L
 
-        override fun GetVPNFd() = vpnService!!.fd.toLong()
+        override fun getVPNFd() = vpnService!!.fd.toLong()
 
-        override fun Prepare() = vpnPrepare().toLong()
+        override fun prepare() = vpnPrepare().toLong()
 
-        override fun Protect(l: Long) = (if (vpnService!!.protect(l.toInt())) 0 else 1).toLong()
+        override fun protect(l: Long) = (if (vpnService!!.protect(l.toInt())) 0 else 1).toLong()
 
-        override fun OnEmitStatus(l: Long, s: String?): Long {
+        override fun onEmitStatus(l: Long, s: String?): Long {
             Logger.d(s)
             return 0
         }
 
-        override fun Setup(s: String): Long {
+        override fun setup(s: String): Long {
             Logger.d(s)
             try {
                 vpnService!!.setup(s)
