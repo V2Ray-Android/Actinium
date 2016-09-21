@@ -1,6 +1,5 @@
 package com.v2ray.actinium.service
 
-import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -24,7 +23,6 @@ import com.v2ray.actinium.util.currConfigFile
 import go.libv2ray.Libv2ray
 import go.libv2ray.V2RayCallbacks
 import go.libv2ray.V2RayVPNServiceSupportsSet
-import org.jetbrains.anko.notificationManager
 import org.jetbrains.anko.startService
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
@@ -34,9 +32,9 @@ import java.util.concurrent.TimeUnit
 
 class V2RayService : Service() {
     companion object {
-        const val NOTIFICATION_ID = 0
+        const val NOTIFICATION_ID = 1
         const val NOTIFICATION_PENDING_INTENT_CONTENT = 0
-        const val NOTIFICATION_PENDING_INTENT_STOP_V2RAY = 0
+        const val NOTIFICATION_PENDING_INTENT_STOP_V2RAY = 1
         const val ACTION_STOP_V2RAY = "com.v2ray.actinium.action.STOP_V2RAY"
 
         var isServiceRunning = false
@@ -131,12 +129,15 @@ class V2RayService : Service() {
             it.unsubscribe()
             connectivitySubscription = null
         }
+        cancelNotification()
         isServiceRunning = false
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         startV2ray()
-        return super.onStartCommand(intent, flags, startId)
+
+        val newFlags = flags or START_STICKY
+        return super.onStartCommand(intent, newFlags, startId)
     }
 
     private fun vpnPrepare(): Int {
@@ -180,7 +181,6 @@ class V2RayService : Service() {
         }
         vpnService = null
         Bus.send(V2RayStatusEvent(false))
-        cancelNotification()
         stopSelf()
     }
 
@@ -208,13 +208,11 @@ class V2RayService : Service() {
                         stopV2RayPendingIntent)
                 .build()
 
-        notification.flags = notification.flags or Notification.FLAG_ONGOING_EVENT
-
-        notificationManager.notify(NOTIFICATION_ID, notification)
+        startForeground(NOTIFICATION_ID, notification)
     }
 
     private fun cancelNotification() {
-        notificationManager.cancel(NOTIFICATION_ID)
+        stopForeground(true)
     }
 
     private inner class V2RayCallback : V2RayCallbacks, V2RayVPNServiceSupportsSet {
