@@ -88,6 +88,11 @@ dependencies {
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
 
     compile 'com.dinuscxj:recycleritemdecoration:1.0.0'
+
+    // LeakCanary
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
+    testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 }
 
 buildscript {
