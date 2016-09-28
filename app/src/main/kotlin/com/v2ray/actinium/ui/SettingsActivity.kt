@@ -1,14 +1,18 @@
 package com.v2ray.actinium.ui
 
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.preference.CheckBoxPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
 import com.v2ray.actinium.R
+import com.v2ray.actinium.aidl.IV2RayService
 import com.v2ray.actinium.service.V2RayService
 import de.psdev.licensesdialog.LicensesDialogFragment
 import org.jetbrains.anko.act
@@ -38,6 +42,31 @@ class SettingsActivity : BaseActivity() {
         val donate: Preference by lazy { findPreference(PREF_DONATE) }
         val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
 
+        val conn = object : ServiceConnection {
+            override fun onServiceDisconnected(name: ComponentName?) {
+            }
+
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val bgService = IV2RayService.Stub.asInterface(service)
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    if (bgService.isRunning) {
+                        blacklist.isEnabled = false
+                        editBlacklist.isEnabled = false
+                    } else {
+                        editBlacklist.setOnPreferenceClickListener {
+                            startActivity<BypassListActivity>()
+                            true
+                        }
+                    }
+                } else {
+                    blacklist.summary = getString(R.string.summary_pref_per_app_proxy_pre_lollipop)
+                    blacklist.isEnabled = false
+                    editBlacklist.isEnabled = false
+                }
+            }
+        }
+
         override fun onCreate(savedInstanceState: Bundle?) {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.pref_settings)
@@ -61,23 +90,13 @@ class SettingsActivity : BaseActivity() {
                 true
             }
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                V2RayService.checkStatusEvent {
-                    if (!it) {
-                        editBlacklist.setOnPreferenceClickListener {
-                            startActivity<BypassListActivity>()
-                            true
-                        }
-                    } else {
-                        blacklist.isEnabled = false
-                        editBlacklist.isEnabled = false
-                    }
-                }
-            } else {
-                blacklist.summary = getString(R.string.summary_pref_per_app_proxy_pre_lollipop)
-                blacklist.isEnabled = false
-                editBlacklist.isEnabled = false
-            }
+            val intent = Intent(act.applicationContext, V2RayService::class.java)
+            act.bindService(intent, conn, BIND_AUTO_CREATE)
+        }
+
+        override fun onDestroy() {
+            super.onDestroy()
+            act.unbindService(conn)
         }
 
         private fun openUri(uriString: String) {

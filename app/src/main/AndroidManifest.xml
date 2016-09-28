@@ -41,13 +41,15 @@
         <service
             android:name=".service.V2RayService"
             android:enabled="true"
-            android:exported="false" />
+            android:exported="false"
+            android:process=":RunSoLibV2RayDaemon" />
 
         <service
             android:name=".service.V2RayVpnService"
             android:enabled="true"
             android:exported="false"
-            android:permission="android.permission.BIND_VPN_SERVICE" />
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:process=":RunSoLibV2RayDaemon" />
 
         <receiver android:name=".receiver.BootBroadcastReceiver">
             <intent-filter>

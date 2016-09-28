@@ -9,15 +9,22 @@ import android.content.IntentFilter
 import android.net.NetworkInfo
 import android.net.VpnService
 import android.os.IBinder
+import android.os.Parcel
 import android.os.StrictMode
 import android.support.v7.app.NotificationCompat
-import com.eightbitlab.rxbus.Bus
-import com.eightbitlab.rxbus.registerInBus
 import com.github.pwittchen.reactivenetwork.library.Connectivity
 import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork
+import com.hwangjr.rxbus.annotation.Subscribe
 import com.orhanobut.logger.Logger
+import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
-import com.v2ray.actinium.event.*
+import com.v2ray.actinium.aidl.IV2RayService
+import com.v2ray.actinium.aidl.IV2RayServiceCallback
+import com.v2ray.actinium.event.StopV2RayEvent
+import com.v2ray.actinium.event.V2RayStatusEvent
+import com.v2ray.actinium.event.VpnServiceSendSelfEvent
+import com.v2ray.actinium.event.VpnServiceStatusEvent
+import com.v2ray.actinium.extension.rxBus
 import com.v2ray.actinium.ui.MainActivity
 import com.v2ray.actinium.util.currConfigFile
 import go.libv2ray.Libv2ray
@@ -28,6 +35,7 @@ import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.io.File
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class V2RayService : Service() {
@@ -43,32 +51,62 @@ class V2RayService : Service() {
         fun startV2Ray(context: Context) {
             context.startService<V2RayService>()
         }
-
-        fun stopV2Ray() {
-            Bus.send(StopV2RayEvent)
-        }
-
-        fun checkStatusEvent(callback: (Boolean) -> Unit) {
-            if (!isServiceRunning) {
-                callback(false)
-                return
-            }
-            Bus.send(CheckV2RayStatusEvent(callback))
-        }
     }
 
     private val v2rayPoint = Libv2ray.newV2RayPoint()
     private var vpnService: V2RayVpnService? = null
     private val v2rayCallback = V2RayCallback()
     private var connectivitySubscription: Subscription? = null
+    private var bypassList: Array<String>? = null
+
     private val stopV2RayReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
             stopV2Ray()
         }
     }
 
+    var serviceCallbacks: MutableSet<IV2RayServiceCallback> = HashSet()
+
+    val binder = object : IV2RayService.Stub() {
+        override fun isRunning(): Boolean {
+            val isRunning = vpnService != null
+                    && v2rayPoint.isRunning
+                    && VpnService.prepare(this@V2RayService) == null
+            return isRunning
+        }
+
+        override fun stopV2Ray() {
+            this@V2RayService.stopV2Ray()
+        }
+
+        override fun registerCallback(cb: IV2RayServiceCallback?) {
+            cb?.let {
+                synchronized(serviceCallbacks) { serviceCallbacks.add(it) }
+            }
+        }
+
+        override fun unregisterCallback(cb: IV2RayServiceCallback?) {
+            cb?.let {
+                synchronized(serviceCallbacks) { serviceCallbacks.remove(it) }
+            }
+        }
+
+        override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
+            var packageName: String? = null
+            val packages = packageManager.getPackagesForUid(getCallingUid())
+            if (packages != null && packages.size > 0) {
+                packageName = packages[0]
+            }
+            if (packageName != BuildConfig.APPLICATION_ID) {
+                return false
+            }
+
+            return super.onTransact(code, data, reply, flags)
+        }
+    }
+
     override fun onBind(intent: Intent): IBinder? {
-        return null
+        return binder
     }
 
     override fun onCreate() {
@@ -81,31 +119,7 @@ class V2RayService : Service() {
 
         v2rayPoint.packageName = packageName
 
-        Bus.observe<VpnServiceSendSelfEvent>()
-                .subscribe {
-                    vpnService = it.vpnService
-                    vpnCheckIsReady()
-                }
-                .registerInBus(this)
-
-        Bus.observe<StopV2RayEvent>()
-                .subscribe {
-                    stopV2Ray()
-                }
-                .registerInBus(this)
-
-        Bus.observe<VpnServiceStatusEvent>()
-                .filter { !it.isRunning }
-                .subscribe { stopV2Ray() }
-                .registerInBus(this)
-
-        Bus.observe<CheckV2RayStatusEvent>()
-                .subscribe {
-                    val isRunning = vpnService != null
-                            && v2rayPoint.isRunning
-                            && VpnService.prepare(this) == null
-                    it.callback(isRunning)
-                }
+        rxBus.register(this)
 
         registerReceiver(stopV2RayReceiver, IntentFilter(ACTION_STOP_V2RAY))
 
@@ -121,20 +135,38 @@ class V2RayService : Service() {
                 }
     }
 
+    @Subscribe
+    fun onVpnServiceSendSelf(event: VpnServiceSendSelfEvent) {
+        vpnService = event.vpnService
+        vpnCheckIsReady()
+    }
+
+    @Subscribe
+    fun onStopV2Ray(event: StopV2RayEvent) {
+        stopV2Ray()
+    }
+
+    @Subscribe
+    fun onVpnServiceStatusChanged(event: VpnServiceStatusEvent) {
+        if (!event.isRunning)
+            stopV2Ray()
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        Bus.unregister(this)
+        rxBus.unregister(this)
         unregisterReceiver(stopV2RayReceiver)
         connectivitySubscription?.let {
             it.unsubscribe()
             connectivitySubscription = null
         }
-        cancelNotification()
         isServiceRunning = false
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        startV2ray()
+        val configPath = intent?.getStringExtra("configPath") ?: currConfigFile.absolutePath
+        bypassList = intent?.getStringArrayExtra("bypassList")
+        startV2ray(configPath)
 
         val newFlags = flags or START_STICKY
         return super.onStartCommand(intent, newFlags, startId)
@@ -149,28 +181,23 @@ class V2RayService : Service() {
         val prepare = VpnService.prepare(this)
 
         if (prepare != null) {
-            Bus.send(VpnPrepareEvent(prepare) {
-                if (it)
-                    vpnCheckIsReady()
-                else
-                    v2rayPoint.stopLoop()
-            })
             return
         }
 
         if (this.vpnService != null) {
             v2rayPoint.vpnSupportReady()
-            Bus.send(V2RayStatusEvent(true))
+            rxBus.post(V2RayStatusEvent(true))
+            serviceCallbacks.forEach { it.onStateChanged(true) }
             showNotification()
         }
     }
 
-    private fun startV2ray() {
+    private fun startV2ray(configPath: String) {
         Logger.d(v2rayPoint)
         if (!v2rayPoint.isRunning) {
             v2rayPoint.callbacks = v2rayCallback
             v2rayPoint.vpnSupportSet = v2rayCallback
-            v2rayPoint.configureFile = currConfigFile.absolutePath
+            v2rayPoint.configureFile = configPath
             v2rayPoint.runLoop()
         }
     }
@@ -180,7 +207,9 @@ class V2RayService : Service() {
             v2rayPoint.stopLoop()
         }
         vpnService = null
-        Bus.send(V2RayStatusEvent(false))
+        rxBus.post(V2RayStatusEvent(false))
+        serviceCallbacks.forEach { it.onStateChanged(false) }
+        cancelNotification()
         stopSelf()
     }
 
@@ -232,7 +261,7 @@ class V2RayService : Service() {
         override fun setup(s: String): Long {
             Logger.d(s)
             try {
-                vpnService!!.setup(s)
+                vpnService!!.setup(s, v2rayPoint.configureFile, bypassList)
                 return 0
             } catch (e: Exception) {
                 e.printStackTrace()

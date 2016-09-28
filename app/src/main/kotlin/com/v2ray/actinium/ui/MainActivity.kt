@@ -2,29 +2,35 @@ package com.v2ray.actinium.ui
 
 import android.Manifest
 import android.app.Activity
+import android.content.ComponentName
 import android.content.Intent
+import android.content.ServiceConnection
 import android.net.Uri
+import android.net.VpnService
 import android.os.Bundle
+import android.os.IBinder
+import android.os.Parcel
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import com.eightbitlab.rxbus.Bus
-import com.eightbitlab.rxbus.registerInBus
 import com.tbruyelle.rxpermissions.RxPermissions
+import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
-import com.v2ray.actinium.event.V2RayStatusEvent
-import com.v2ray.actinium.event.VpnPrepareEvent
+import com.v2ray.actinium.aidl.IV2RayService
+import com.v2ray.actinium.aidl.IV2RayServiceCallback
 import com.v2ray.actinium.extension.alert
 import com.v2ray.actinium.service.V2RayService
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
+import com.v2ray.actinium.util.currConfigFile
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
+import java.util.*
 
 class MainActivity : BaseActivity() {
 
@@ -37,6 +43,9 @@ class MainActivity : BaseActivity() {
     var fabChecked = false
         set(value) {
             field = value
+
+            adapter.changeable = !value
+
             if (value) {
                 fab.imageResource = R.drawable.ic_check_24dp
             } else {
@@ -45,9 +54,44 @@ class MainActivity : BaseActivity() {
 
         }
 
-    private lateinit var vpnPrepareCallback: (Boolean) -> Unit
-
     private val adapter by lazy { MainRecyclerAdapter(this) }
+
+    var bgService: IV2RayService? = null
+
+    val conn = object : ServiceConnection {
+        override fun onServiceDisconnected(name: ComponentName?) {
+            bgService?.unregisterCallback(serviceCallback)
+        }
+
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val service1 = IV2RayService.Stub.asInterface(service)
+            bgService = service1
+            service1.registerCallback(serviceCallback)
+            fabChecked = service1.isRunning
+
+        }
+    }
+
+    val serviceCallback = object : IV2RayServiceCallback.Stub() {
+        override fun onStateChanged(isRunning: Boolean) {
+            onUiThread {
+                fabChecked = isRunning
+            }
+        }
+
+        override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
+            var packageName: String? = null
+            val packages = packageManager.getPackagesForUid(getCallingUid())
+            if (packages != null && packages.size > 0) {
+                packageName = packages[0]
+            }
+            if (packageName != BuildConfig.APPLICATION_ID) {
+                return false
+            }
+
+            return super.onTransact(code, data, reply, flags)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,51 +99,52 @@ class MainActivity : BaseActivity() {
 
         fab.setOnClickListener {
             if (fabChecked) {
-                V2RayService.stopV2Ray()
+                bgService?.stopV2Ray()
                 Snackbar.make(it, R.string.toast_v2ray_is_stopping, Snackbar.LENGTH_SHORT).show()
             } else {
-                if (adapter.actionMode != null)
-                    adapter.actionMode?.finish()
-
-                V2RayService.startV2Ray(ctx)
-                Snackbar.make(it, R.string.toast_v2ray_is_starting, Snackbar.LENGTH_SHORT).show()
+                val intent = VpnService.prepare(this)
+                if (intent == null)
+                    startV2Ray()
+                else
+                    startActivityForResult(intent, REQUEST_CODE_VPN_PREPARE)
             }
         }
 
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
 
-        Bus.observe<VpnPrepareEvent>()
-                .subscribe {
-                    vpnPrepareCallback = it.callback
-                    startActivityForResult(it.intent, REQUEST_CODE_VPN_PREPARE)
-                }
-                .registerInBus(this)
-
-        Bus.observe<V2RayStatusEvent>()
-                .subscribe {
-                    fabChecked = it.isRunning
-                    adapter.changeable = !it.isRunning
-
-                }
-        V2RayService.checkStatusEvent {
-            fabChecked = it
-            adapter.changeable = !it
-        }
+        val intent = Intent(this.applicationContext, V2RayService::class.java)
+        bindService(intent, conn, BIND_AUTO_CREATE)
 
         importConfigFromIntent(intent)
     }
 
+    fun startV2Ray() {
+        if (adapter.actionMode != null)
+            adapter.actionMode?.finish()
+
+        val intent = Intent(this.applicationContext, V2RayService::class.java)
+        intent.putExtra("configPath", currConfigFile.absolutePath)
+
+        if (defaultSharedPreferences.getBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
+            val bypassList = defaultSharedPreferences.getStringSet(BypassListActivity.PREF_BYPASS_LIST_SET, HashSet())
+            intent.putExtra("bypassList", bypassList.toTypedArray())
+        }
+
+        startService(intent)
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        Bus.unregister(this)
+        unbindService(conn)
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         when (requestCode) {
             REQUEST_CODE_VPN_PREPARE ->
-                vpnPrepareCallback(resultCode == Activity.RESULT_OK)
+                startV2Ray()
+        //vpnPrepareCallback(resultCode == Activity.RESULT_OK)
 
             REQUEST_CODE_FILE_SELECT -> {
                 if (resultCode == Activity.RESULT_OK) {

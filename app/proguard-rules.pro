@@ -34,3 +34,10 @@
 
 -dontwarn app.dinus.**
 -keep class app.dinus.** { *;}
+
+-keepclassmembers class ** {
+    @com.hwangjr.rxbus.annotation.Subscribe public *;
+    @com.hwangjr.rxbus.annotation.Produce public *;
+}
+-dontwarn com.hwangjr.rxbus.**
+-keep class com.hwangjr.rxbus.** { *;}

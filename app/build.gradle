@@ -4,7 +4,7 @@ apply plugin: 'kotlin-android-extensions'
 
 android {
     compileSdkVersion 24
-    buildToolsVersion "24.0.1"
+    buildToolsVersion "24.0.2"
 
     defaultConfig {
         applicationId "com.v2ray.actinium"
@@ -68,8 +68,6 @@ dependencies {
     compile "org.jetbrains.anko:anko-appcompat-v7:$ankoVersion"
     compile "org.jetbrains.anko:anko-design:$ankoVersion"
 
-    compile 'com.eightbitlab:rxbus:1.0.2'
-
     compile 'com.orhanobut:logger:1.15'
 
     compile('commons-validator:commons-validator:1.5.1') {
@@ -93,6 +91,10 @@ dependencies {
     debugCompile 'com.squareup.leakcanary:leakcanary-android:1.4'
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
+
+    compile 'com.hwangjr.rxbus:rxbus:1.0.5'
+
+    compile 'io.reactivex:rxkotlin:0.60.0'
 }
 
 buildscript {
