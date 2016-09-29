@@ -13,7 +13,7 @@ import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
-import com.v2ray.actinium.service.V2RayService
+import com.v2ray.actinium.service.V2RayVpnService
 import de.psdev.licensesdialog.LicensesDialogFragment
 import org.jetbrains.anko.act
 import org.jetbrains.anko.startActivity
@@ -26,6 +26,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_LICENSES = "pref_licenses"
         const val PREF_DONATE = "pref_donate"
         const val PREF_FEEDBACK = "pref_feedback"
+        const val PREF_AUTO_RESTART = "pref_auto_restart"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,6 +38,7 @@ class SettingsActivity : BaseActivity() {
 
     class SettingsFragment : PreferenceFragment() {
         val blacklist by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
+        val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
         val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BYPASS_LIST) }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
         val donate: Preference by lazy { findPreference(PREF_DONATE) }
@@ -49,8 +51,12 @@ class SettingsActivity : BaseActivity() {
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 val bgService = IV2RayService.Stub.asInterface(service)
 
+                val isV2RayRunning = bgService.isRunning
+
+                autoRestart.isEnabled = !isV2RayRunning
+
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    if (bgService.isRunning) {
+                    if (isV2RayRunning) {
                         blacklist.isEnabled = false
                         editBlacklist.isEnabled = false
                     } else {
@@ -90,7 +96,7 @@ class SettingsActivity : BaseActivity() {
                 true
             }
 
-            val intent = Intent(act.applicationContext, V2RayService::class.java)
+            val intent = Intent(act.applicationContext, V2RayVpnService::class.java)
             act.bindService(intent, conn, BIND_AUTO_CREATE)
         }
 

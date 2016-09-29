@@ -33,4 +33,6 @@
     <string name="title_pref_feedback">Feedback</string>
     <string name="summary_pref_feedback">Feedback enhancements or bugs to GitHub</string>
     <string name="menu_item_select_all">Select all</string>
+    <string name="title_pref_auto_restart">Auto restart KCP connections</string>
+    <string name="summary_pref_auto_restart">Auto restart KCP connections when network state changed, can reduce the time of network interruption, but it may lead to some instability</string>
 </resources>

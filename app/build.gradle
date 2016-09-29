@@ -92,8 +92,6 @@ dependencies {
     releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 
-    compile 'com.hwangjr.rxbus:rxbus:1.0.5'
-
     compile 'io.reactivex:rxkotlin:0.60.0'
 }
 

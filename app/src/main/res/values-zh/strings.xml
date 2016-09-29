@@ -34,4 +34,6 @@
     <string name="title_pref_feedback">反馈</string>
     <string name="summary_pref_feedback">反馈改进或漏洞至GitHub</string>
     <string name="menu_item_select_all">全选</string>
+    <string name="summary_pref_auto_restart">网络状态改变时自动重启 KCP 连接，可减少网络中断的时间，但可能造成一些不稳定</string>
+    <string name="title_pref_auto_restart">自动重启 KCP 连接</string>
 </resources>

@@ -100,12 +100,18 @@ object ConfigUtil {
         return ret.toTypedArray()
     }
 
-    fun readAddressFromConfig(conf: String): String? {
+    fun getOutboundFromConfig(conf: String): JSONObject? {
         val json = JSONObject(conf)
 
         if (!json.has("outbound"))
             return null
         val outbound = json.optJSONObject("outbound")
+
+        return outbound
+    }
+
+    fun readAddressFromConfig(conf: String): String? {
+        val outbound = getOutboundFromConfig(conf) ?: return null
 
         if (!outbound.has("settings"))
             return null
@@ -124,6 +130,20 @@ object ConfigUtil {
         val address = vpoint.optString("address")
 
         return address
+    }
+
+    fun isKcpConfig(conf: String): Boolean {
+        val outbound = getOutboundFromConfig(conf) ?: return false
+
+        if (!outbound.has("streamSettings"))
+            return false
+        val streamSettings = outbound.optJSONObject("streamSettings")
+
+        if (!streamSettings.has("network"))
+            return false
+        val network = streamSettings.optString("network")
+
+        return network.equals("kcp", ignoreCase = true)
     }
 
     fun readAddressByName(name: String): String? {

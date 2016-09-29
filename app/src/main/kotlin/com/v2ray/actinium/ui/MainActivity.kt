@@ -15,22 +15,21 @@ import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
 import com.v2ray.actinium.aidl.IV2RayServiceCallback
 import com.v2ray.actinium.extension.alert
-import com.v2ray.actinium.service.V2RayService
+import com.v2ray.actinium.service.V2RayVpnService
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
-import com.v2ray.actinium.util.currConfigFile
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
-import java.util.*
 
 class MainActivity : BaseActivity() {
 
@@ -61,6 +60,7 @@ class MainActivity : BaseActivity() {
     val conn = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             bgService?.unregisterCallback(serviceCallback)
+            Logger.d(name)
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -113,9 +113,6 @@ class MainActivity : BaseActivity() {
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.adapter = adapter
 
-        val intent = Intent(this.applicationContext, V2RayService::class.java)
-        bindService(intent, conn, BIND_AUTO_CREATE)
-
         importConfigFromIntent(intent)
     }
 
@@ -123,19 +120,19 @@ class MainActivity : BaseActivity() {
         if (adapter.actionMode != null)
             adapter.actionMode?.finish()
 
-        val intent = Intent(this.applicationContext, V2RayService::class.java)
-        intent.putExtra("configPath", currConfigFile.absolutePath)
-
-        if (defaultSharedPreferences.getBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
-            val bypassList = defaultSharedPreferences.getStringSet(BypassListActivity.PREF_BYPASS_LIST_SET, HashSet())
-            intent.putExtra("bypassList", bypassList.toTypedArray())
-        }
-
-        startService(intent)
+        V2RayVpnService.startV2Ray(this)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
+    override fun onStart() {
+        super.onStart()
+
+        val intent = Intent(this.applicationContext, V2RayVpnService::class.java)
+        bindService(intent, conn, BIND_AUTO_CREATE)
+    }
+
+    override fun onStop() {
+        super.onStop()
+
         unbindService(conn)
     }
 
