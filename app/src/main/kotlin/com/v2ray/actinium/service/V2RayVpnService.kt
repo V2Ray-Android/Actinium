@@ -8,10 +8,7 @@ import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.net.NetworkInfo
 import android.net.VpnService
-import android.os.Build
-import android.os.Parcel
-import android.os.ParcelFileDescriptor
-import android.os.StrictMode
+import android.os.*
 import android.support.v7.app.NotificationCompat
 import android.util.Log
 import com.github.pwittchen.reactivenetwork.library.Connectivity
@@ -21,6 +18,7 @@ import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
 import com.v2ray.actinium.aidl.IV2RayServiceCallback
+import com.v2ray.actinium.extension.broadcastAll
 import com.v2ray.actinium.ui.BypassListActivity
 import com.v2ray.actinium.ui.MainActivity
 import com.v2ray.actinium.ui.SettingsActivity
@@ -81,7 +79,7 @@ class V2RayVpnService : VpnService() {
         }
     }
 
-    var serviceCallbacks: MutableSet<IV2RayServiceCallback> = HashSet()
+    var serviceCallbacks = RemoteCallbackList<IV2RayServiceCallback>()
 
     val binder = object : IV2RayService.Stub() {
         override fun isRunning(): Boolean {
@@ -96,13 +94,13 @@ class V2RayVpnService : VpnService() {
 
         override fun registerCallback(cb: IV2RayServiceCallback?) {
             cb?.let {
-                synchronized(serviceCallbacks) { serviceCallbacks.add(it) }
+                serviceCallbacks.register(it)
             }
         }
 
         override fun unregisterCallback(cb: IV2RayServiceCallback?) {
             cb?.let {
-                synchronized(serviceCallbacks) { serviceCallbacks.remove(it) }
+                serviceCallbacks.unregister(it)
             }
         }
 
@@ -213,7 +211,7 @@ class V2RayVpnService : VpnService() {
         }
 
         v2rayPoint.vpnSupportReady()
-        serviceCallbacks.forEach { it.onStateChanged(true) }
+        serviceCallbacks.broadcastAll { it.onStateChanged(true) }
     }
 
     private fun startV2ray(configPath: String, autoRestart: Boolean, foregroundService: Boolean) {
@@ -254,7 +252,7 @@ class V2RayVpnService : VpnService() {
             connectivitySubscription = null
         }
 
-        serviceCallbacks.forEach { it.onStateChanged(false) }
+        serviceCallbacks.broadcastAll { it.onStateChanged(false) }
         cancelNotification()
         stopSelf()
     }

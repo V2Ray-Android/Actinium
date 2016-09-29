@@ -15,7 +15,6 @@ import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
-import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
@@ -60,7 +59,6 @@ class MainActivity : BaseActivity() {
     val conn = object : ServiceConnection {
         override fun onServiceDisconnected(name: ComponentName?) {
             bgService?.unregisterCallback(serviceCallback)
-            Logger.d(name)
         }
 
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
@@ -133,6 +131,7 @@ class MainActivity : BaseActivity() {
     override fun onStop() {
         super.onStop()
 
+        bgService?.unregisterCallback(serviceCallback)
         unbindService(conn)
     }
 
