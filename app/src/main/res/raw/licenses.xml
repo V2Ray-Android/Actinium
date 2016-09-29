@@ -47,15 +47,27 @@
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
+        <name>LeakCanary</name>
+        <url>https://github.com/square/leakcanary</url>
+        <copyright>Copyright 2015 Square, Inc.</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
         <name>ReactiveNetwork</name>
         <url>https://github.com/pwittchen/ReactiveNetwork</url>
         <copyright>Copyright 2016 Piotr Wittchen</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
-        <name>RxBus</name>
-        <url>https://github.com/Dimezis/RxBus</url>
-        <copyright>Copyright 2016 Dmitry Saviuk</copyright>
+        <name>RecyclerItemDecoration</name>
+        <url>https://github.com/dinuscxj/RecyclerItemDecoration</url>
+        <copyright>Copyright 2015-2019 dinus</copyright>
+        <license>Apache Software License 2.0</license>
+    </notice>
+    <notice>
+        <name>RxKotlin</name>
+        <url>https://github.com/ReactiveX/RxKotlin</url>
+        <copyright>Copyright 2012 Netflix, Inc.</copyright>
         <license>Apache Software License 2.0</license>
     </notice>
     <notice>
