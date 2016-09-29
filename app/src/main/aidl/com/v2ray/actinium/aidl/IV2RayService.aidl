@@ -8,4 +8,6 @@ interface IV2RayService {
 
     void registerCallback(IV2RayServiceCallback cb);
     void unregisterCallback(IV2RayServiceCallback cb);
+
+    void onPrefForegroundServiceChanged(boolean isEnabled);
 }

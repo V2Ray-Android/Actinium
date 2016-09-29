@@ -36,4 +36,6 @@
     <string name="menu_item_select_all">全选</string>
     <string name="summary_pref_auto_restart">网络状态改变时自动重启 KCP 连接，可减少网络中断的时间，但可能造成一些不稳定</string>
     <string name="title_pref_auto_restart">自动重启 KCP 连接</string>
+    <string name="summary_pref_foreground_service">使用前台服务以防被系统杀死，这将显示一个通知</string>
+    <string name="title_pref_foreground_service">前台服务</string>
 </resources>

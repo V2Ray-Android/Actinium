@@ -51,9 +51,14 @@ class V2RayVpnService : VpnService() {
             val configFile = context.currConfigFile
             intent.putExtra("configPath", configFile.absolutePath)
 
-            val autoRestart = context.defaultSharedPreferences.getBoolean(SettingsActivity.PREF_AUTO_RESTART, false)
+            val autoRestart = context.defaultSharedPreferences
+                    .getBoolean(SettingsActivity.PREF_AUTO_RESTART, false)
                     && ConfigUtil.isKcpConfig(configFile.readText())
             intent.putExtra("autoRestart", autoRestart)
+
+            val foregroundService = context.defaultSharedPreferences
+                    .getBoolean(SettingsActivity.PREF_FOREGROUND_SERVICE, false)
+            intent.putExtra("foregroundService", foregroundService)
 
             if (context.defaultSharedPreferences.getBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
                 val bypassList = context.defaultSharedPreferences
@@ -101,6 +106,13 @@ class V2RayVpnService : VpnService() {
             }
         }
 
+        override fun onPrefForegroundServiceChanged(isEnabled: Boolean) {
+            if (isEnabled)
+                showNotification()
+            else
+                cancelNotification()
+        }
+
         override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
             var packageName: String? = null
             val packages = packageManager.getPackagesForUid(getCallingUid())
@@ -138,7 +150,7 @@ class V2RayVpnService : VpnService() {
         super.onRevoke()
     }
 
-    fun setup(parameters: String, configPath: String, bypassList: Array<String>?) {
+    fun setup(parameters: String) {
         // If the old interface has exactly the same parameters, use it!
         // Configure a builder while parsing the parameters.
         val builder = Builder()
@@ -154,19 +166,21 @@ class V2RayVpnService : VpnService() {
 
         }
 
-        val conf = File(configPath).readText()
+        val conf = File(v2rayPoint.configureFile).readText()
         val dnsServers = ConfigUtil.readDnsServersFromConfig(conf, "8.8.8.8", "8.8.4.4")
         for (dns in dnsServers)
             builder.addDnsServer(dns)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-                bypassList != null) {
-            for (app in bypassList)
-                try {
-                    builder.addDisallowedApplication(app)
-                } catch (e: PackageManager.NameNotFoundException) {
-                    Logger.d(e)
-                }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            bypassList?.let {
+                for (app in it)
+                    try {
+                        builder.addDisallowedApplication(app)
+                    } catch (e: PackageManager.NameNotFoundException) {
+                        Logger.d(e)
+                    }
+            }
+
         }
 
         // Close the old interface since the parameters have been changed.
@@ -180,11 +194,13 @@ class V2RayVpnService : VpnService() {
         Log.i("VPNService", "New interface: " + parameters)
     }
 
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val configPath = intent?.getStringExtra("configPath") ?: currConfigFile.absolutePath
-        val autoRestart = intent?.getBooleanExtra("autoRestart", false)!!
-        bypassList = intent?.getStringArrayExtra("bypassList")
-        startV2ray(configPath, autoRestart)
+    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
+        val configPath = intent.getStringExtra("configPath") ?: currConfigFile.absolutePath
+        val autoRestart = intent.getBooleanExtra("autoRestart", false)
+        val foregroundService = intent.getBooleanExtra("foregroundService", false)
+        bypassList = intent.getStringArrayExtra("bypassList")
+
+        startV2ray(configPath, autoRestart, foregroundService)
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -198,10 +214,9 @@ class V2RayVpnService : VpnService() {
 
         v2rayPoint.vpnSupportReady()
         serviceCallbacks.forEach { it.onStateChanged(true) }
-        showNotification()
     }
 
-    private fun startV2ray(configPath: String, autoRestart: Boolean) {
+    private fun startV2ray(configPath: String, autoRestart: Boolean, foregroundService: Boolean) {
         if (!v2rayPoint.isRunning) {
 
             registerReceiver(stopV2RayReceiver, IntentFilter(ACTION_STOP_V2RAY))
@@ -223,6 +238,9 @@ class V2RayVpnService : VpnService() {
             v2rayPoint.configureFile = configPath
             v2rayPoint.runLoop()
         }
+
+        if (foregroundService)
+            showNotification()
     }
 
     private fun stopV2Ray() {
@@ -292,7 +310,7 @@ class V2RayVpnService : VpnService() {
         override fun setup(s: String): Long {
             Logger.d(s)
             try {
-                this@V2RayVpnService.setup(s, v2rayPoint.configureFile, bypassList)
+                this@V2RayVpnService.setup(s)
                 return 0
             } catch (e: Exception) {
                 e.printStackTrace()

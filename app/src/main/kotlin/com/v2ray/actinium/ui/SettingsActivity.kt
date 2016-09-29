@@ -3,6 +3,7 @@ package com.v2ray.actinium.ui
 import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -16,6 +17,7 @@ import com.v2ray.actinium.aidl.IV2RayService
 import com.v2ray.actinium.service.V2RayVpnService
 import de.psdev.licensesdialog.LicensesDialogFragment
 import org.jetbrains.anko.act
+import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.startActivity
 
 class SettingsActivity : BaseActivity() {
@@ -27,6 +29,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_DONATE = "pref_donate"
         const val PREF_FEEDBACK = "pref_feedback"
         const val PREF_AUTO_RESTART = "pref_auto_restart"
+        const val PREF_FOREGROUND_SERVICE = "pref_foreground_service"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,7 +39,7 @@ class SettingsActivity : BaseActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    class SettingsFragment : PreferenceFragment() {
+    class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
         val blacklist by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
         val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
         val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BYPASS_LIST) }
@@ -44,14 +47,18 @@ class SettingsActivity : BaseActivity() {
         val donate: Preference by lazy { findPreference(PREF_DONATE) }
         val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
 
+        var bgService: IV2RayService? = null
+
         val conn = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
             }
 
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                val bgService = IV2RayService.Stub.asInterface(service)
+                val service1 = IV2RayService.Stub.asInterface(service)
 
-                val isV2RayRunning = bgService.isRunning
+                bgService = service1
+
+                val isV2RayRunning = service1.isRunning
 
                 autoRestart.isEnabled = !isV2RayRunning
 
@@ -95,14 +102,30 @@ class SettingsActivity : BaseActivity() {
                 openUri("https://github.com/V2Ray-Android/Actinium/issues/new")
                 true
             }
+        }
+
+        override fun onStart() {
+            super.onStart()
 
             val intent = Intent(act.applicationContext, V2RayVpnService::class.java)
             act.bindService(intent, conn, BIND_AUTO_CREATE)
+
+            defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
         }
 
-        override fun onDestroy() {
-            super.onDestroy()
+        override fun onStop() {
+            super.onStop()
+
             act.unbindService(conn)
+
+            defaultSharedPreferences.unregisterOnSharedPreferenceChangeListener(this)
+        }
+
+        override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
+            when (key) {
+                PREF_FOREGROUND_SERVICE ->
+                    bgService?.onPrefForegroundServiceChanged(sharedPreferences.getBoolean(key, false))
+            }
         }
 
         private fun openUri(uriString: String) {

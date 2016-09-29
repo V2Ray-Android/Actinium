@@ -21,6 +21,11 @@
             android:key="pref_auto_restart"
             android:summary="@string/summary_pref_auto_restart"
             android:title="@string/title_pref_auto_restart" />
+
+        <CheckBoxPreference
+            android:key="pref_foreground_service"
+            android:summary="@string/summary_pref_foreground_service"
+            android:title="@string/title_pref_foreground_service" />
     </PreferenceCategory>
 
     <PreferenceCategory android:title="@string/title_about">
