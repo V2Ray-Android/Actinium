@@ -112,6 +112,11 @@ class V2RayVpnService : VpnService() {
         }
 
         override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
+            if (code == IBinder.LAST_CALL_TRANSACTION) {
+                onRevoke()
+                return true
+            }
+
             var packageName: String? = null
             val packages = packageManager.getPackagesForUid(getCallingUid())
             if (packages != null && packages.size > 0) {
@@ -145,7 +150,6 @@ class V2RayVpnService : VpnService() {
 
     override fun onRevoke() {
         stopV2Ray()
-        super.onRevoke()
     }
 
     fun setup(parameters: String) {
