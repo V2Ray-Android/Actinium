@@ -26,7 +26,6 @@ class SettingsActivity : BaseActivity() {
         const val PREF_PER_APP_PROXY = "pref_per_app_proxy"
         const val PREF_EDIT_BYPASS_LIST = "pref_edit_bypass_list"
         const val PREF_LICENSES = "pref_licenses"
-        const val PREF_DONATE = "pref_donate"
         const val PREF_FEEDBACK = "pref_feedback"
         const val PREF_AUTO_RESTART = "pref_auto_restart"
         const val PREF_FOREGROUND_SERVICE = "pref_foreground_service"
@@ -44,7 +43,6 @@ class SettingsActivity : BaseActivity() {
         val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
         val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BYPASS_LIST) }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
-        val donate: Preference by lazy { findPreference(PREF_DONATE) }
         val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
 
         var bgService: IV2RayService? = null
@@ -90,11 +88,6 @@ class SettingsActivity : BaseActivity() {
                         .setIncludeOwnLicense(false)
                         .build()
                 fragment.show((act as AppCompatActivity).supportFragmentManager, null)
-                true
-            }
-
-            donate.setOnPreferenceClickListener {
-                openUri("https://blockchain.info/address/191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB")
                 true
             }
 
