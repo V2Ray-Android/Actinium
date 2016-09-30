@@ -168,7 +168,11 @@ class V2RayVpnService : VpnService() {
 
         }
 
-        val conf = File(v2rayPoint.configureFile).readText()
+        val configFile = File(v2rayPoint.configureFile)
+
+        builder.setSession(configFile.name)
+
+        val conf = configFile.readText()
         val dnsServers = ConfigUtil.readDnsServersFromConfig(conf, "8.8.8.8", "8.8.4.4")
         for (dns in dnsServers)
             builder.addDnsServer(dns)
