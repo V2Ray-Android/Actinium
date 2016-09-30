@@ -92,7 +92,7 @@ class SettingsActivity : BaseActivity() {
             }
 
             feedback.setOnPreferenceClickListener {
-                openUri("https://github.com/V2Ray-Android/Actinium/issues/new")
+                openUri("https://github.com/V2Ray-Android/Actinium/issues")
                 true
             }
         }
