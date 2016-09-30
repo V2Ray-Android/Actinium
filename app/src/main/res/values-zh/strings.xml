@@ -1,39 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Actinium</string>
-    <string name="notification_action_stop_v2ray">停止V2Ray</string>
+
+    <!-- Notifications -->
+    <string name="notification_content_title">V2Ray 正在运行</string>
     <string name="notification_content_text">正在使用的配置: %1$s</string>
-    <string name="notification_content_title">V2Ray正在运行</string>
+    <string name="notification_action_stop_v2ray">停止V2Ray</string>
+
+    <!-- MainActivity -->
     <string name="menu_item_add_config">添加配置</string>
-    <string name="msg_dialog_convert_config">配置文件与Actinium不兼容，点击确定进行转化。</string>
-    <string name="title_dialog_convert_config">转化配置文件</string>
     <string name="title_file_chooser">选择文件以导入</string>
-    <string name="toast_config_file_invalid">配置文件无效</string>
-    <string name="toast_require_file_manager">请安装一个文件管理器</string>
+    <string name="title_dialog_convert_config">转化配置文件</string>
+    <string name="msg_dialog_convert_config">配置文件与 Actinium 不兼容，点击确定进行转化。</string>
     <string name="title_dialog_input_config_name">请输入配置名称</string>
-    <string name="title_pref_start_on_boot">开机自启</string>
-    <string name="title_activity_settings">设定</string>
-    <string name="summary_pref_start_on_boot">在开机时启动V2Ray</string>
-    <string name="toast_v2ray_is_starting">正在启动V2Ray</string>
-    <string name="toast_v2ray_is_stopping">正在停止V2Ray</string>
-    <string name="menu_item_del_config">删除配置</string>
-    <string name="summary_pref_edit_bypass_list">编辑直连列表</string>
-    <string name="summary_pref_per_app_proxy">加入直连列表的应用将不会通过V2Ray访问互联网（直接连接）</string>
-    <string name="title_pref_per_app_proxy">分应用代理</string>
-    <string name="title_pref_edit_bypass_list">编辑直连列表</string>
-    <string name="toast_permission_denied">无法取得权限</string>
     <string name="menu_item_rename_config">重命名配置</string>
-    <string name="summary_pref_per_app_proxy_pre_lollipop">分应用代理仅支持Android Lollipop及更高</string>
-    <string name="title_about">关于</string>
-    <string name="title_settings">设置</string>
-    <string name="toast_copied_to_clipboard">已复制到剪贴板</string>
+    <string name="toast_require_file_manager">请安装一个文件管理器</string>
+    <string name="toast_permission_denied">无法取得权限</string>
+    <string name="toast_config_file_invalid">配置文件无效</string>
+    <string name="toast_v2ray_is_starting">正在启动 V2Ray</string>
+    <string name="toast_v2ray_is_stopping">正在停止 V2Ray</string>
+
+    <!-- SettingsActivity -->
+    <string name="title_activity_settings">设定</string>
+    <string name="menu_item_del_config">删除配置</string>
+
+    <!-- BypassListActivity -->
     <string name="title_activity_bypass_list">直连列表</string>
     <string name="msg_dialog_progress">正在加载</string>
-    <string name="title_pref_feedback">反馈</string>
-    <string name="summary_pref_feedback">反馈改进或漏洞至GitHub</string>
     <string name="menu_item_select_all">全选</string>
-    <string name="summary_pref_auto_restart">网络状态改变时自动重启 KCP 连接，可减少网络中断的时间，但可能造成一些不稳定</string>
+
+    <!-- Preferences -->
+    <string name="title_settings">设置</string>
+    <string name="title_about">关于</string>
+
+    <string name="title_pref_start_on_boot">开机自启</string>
+    <string name="summary_pref_start_on_boot">在开机时启动V2Ray</string>
+
+    <string name="title_pref_per_app_proxy">分应用代理</string>
+    <string name="summary_pref_per_app_proxy">加入直连列表的应用将不会通过V2Ray访问互联网</string>
+    <string name="summary_pref_per_app_proxy_pre_lollipop">分应用代理仅支持 Android Lollipop 及更高</string>
+
+    <string name="title_pref_edit_bypass_list">编辑直连列表</string>
+    <string name="summary_pref_edit_bypass_list">编辑直连列表</string>
+
+    <string name="title_pref_feedback">反馈</string>
+    <string name="summary_pref_feedback">反馈改进或漏洞至 GitHub</string>
+
     <string name="title_pref_auto_restart">自动重启 KCP 连接</string>
-    <string name="summary_pref_foreground_service">使用前台服务以防被系统杀死，这将显示一个通知</string>
+    <string name="summary_pref_auto_restart">网络状态改变时自动重启 KCP 连接，可减少网络中断的时间，但可能造成一些不稳定</string>
+
     <string name="title_pref_foreground_service">前台服务</string>
+    <string name="summary_pref_foreground_service">使用前台服务以防被系统杀死，这将显示一个通知</string>
 </resources>
