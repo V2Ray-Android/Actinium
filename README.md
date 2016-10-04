@@ -1,4 +1,4 @@
-[![GitHub version](https://badge.fury.io/gh/V2Ray-Android%2FActinium.svg)](https://github.com/V2Ray-Android/Actinium/releases) ![license](http://img.shields.io/badge/license-GPLv3-brightgreen.svg) ![platform](http://img.shields.io/badge/platform-Android-blue.svg)
+[![GitHub version](https://badge.fury.io/gh/V2Ray-Android%2FActinium.svg)](https://github.com/V2Ray-Android/Actinium/releases/latest) ![platform](http://img.shields.io/badge/platform-Android-blue.svg)
 # Actinium
 
 * If you don't know what is V2Ray, please see to [V2Ray official website](http://www.v2ray.com).
@@ -28,21 +28,3 @@ Module "libv2ray" is build from [AndroidLibV2ray](https://github.com/V2Ray-Andro
 If you like Actinium and want to support the developer of this repo, consider buying me a cup of coffee.  
 BTC: [191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB](https://blockchain.info/address/191Ky8kA4BemiG3RfPiJjStEUqFcQ4DdAB)  
 [Donators](https://github.com/V2Ray-Android/Actinium/blob/master/DONATORS.md)
-
-## License
-```
-Copyright 2016 V2Ray-Android
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-```
