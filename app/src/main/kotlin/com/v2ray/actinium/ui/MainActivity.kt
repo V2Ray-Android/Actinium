@@ -9,18 +9,16 @@ import android.net.Uri
 import android.net.VpnService
 import android.os.Bundle
 import android.os.IBinder
-import android.os.Parcel
 import android.support.design.widget.Snackbar
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import com.tbruyelle.rxpermissions.RxPermissions
-import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
-import com.v2ray.actinium.aidl.IV2RayServiceCallback
 import com.v2ray.actinium.extension.alert
+import com.v2ray.actinium.extra.IV2RayServiceCallbackStub
 import com.v2ray.actinium.service.V2RayVpnService
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
@@ -65,29 +63,16 @@ class MainActivity : BaseActivity() {
             val service1 = IV2RayService.Stub.asInterface(service)
             bgService = service1
             service1.registerCallback(serviceCallback)
-            fabChecked = service1.isRunning
+            serviceCallback.onStateChanged(service1.isRunning)
 
         }
     }
 
-    val serviceCallback = object : IV2RayServiceCallback.Stub() {
+    val serviceCallback = object : IV2RayServiceCallbackStub(this) {
         override fun onStateChanged(isRunning: Boolean) {
             onUiThread {
                 fabChecked = isRunning
             }
-        }
-
-        override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
-            var packageName: String? = null
-            val packages = packageManager.getPackagesForUid(getCallingUid())
-            if (packages != null && packages.size > 0) {
-                packageName = packages[0]
-            }
-            if (packageName != BuildConfig.APPLICATION_ID) {
-                return false
-            }
-
-            return super.onTransact(code, data, reply, flags)
         }
     }
 

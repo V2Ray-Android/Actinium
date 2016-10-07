@@ -14,11 +14,10 @@ import android.util.Log
 import com.github.pwittchen.reactivenetwork.library.Connectivity
 import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork
 import com.orhanobut.logger.Logger
-import com.v2ray.actinium.BuildConfig
 import com.v2ray.actinium.R
-import com.v2ray.actinium.aidl.IV2RayService
 import com.v2ray.actinium.aidl.IV2RayServiceCallback
 import com.v2ray.actinium.extension.broadcastAll
+import com.v2ray.actinium.extra.IV2RayServiceStub
 import com.v2ray.actinium.ui.BypassListActivity
 import com.v2ray.actinium.ui.MainActivity
 import com.v2ray.actinium.ui.SettingsActivity
@@ -81,7 +80,7 @@ class V2RayVpnService : VpnService() {
 
     var serviceCallbacks = RemoteCallbackList<IV2RayServiceCallback>()
 
-    val binder = object : IV2RayService.Stub() {
+    val binder = object : IV2RayServiceStub(this) {
         override fun isRunning(): Boolean {
             val isRunning = v2rayPoint.isRunning
                     && VpnService.prepare(this@V2RayVpnService) == null
@@ -115,15 +114,6 @@ class V2RayVpnService : VpnService() {
             if (code == IBinder.LAST_CALL_TRANSACTION) {
                 onRevoke()
                 return true
-            }
-
-            var packageName: String? = null
-            val packages = packageManager.getPackagesForUid(getCallingUid())
-            if (packages != null && packages.size > 0) {
-                packageName = packages[0]
-            }
-            if (packageName != BuildConfig.APPLICATION_ID) {
-                return false
             }
 
             return super.onTransact(code, data, reply, flags)
