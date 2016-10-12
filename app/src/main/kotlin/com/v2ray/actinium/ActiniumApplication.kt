@@ -6,6 +6,7 @@ import com.orhanobut.logger.LogLevel
 import com.orhanobut.logger.Logger
 import com.squareup.leakcanary.LeakCanary
 import com.v2ray.actinium.util.ConfigManager
+import me.dozen.dpreference.DPreference
 import org.jetbrains.anko.defaultSharedPreferences
 
 class ActiniumApplication : Application() {
@@ -15,6 +16,8 @@ class ActiniumApplication : Application() {
 
     var firstRun = false
         private set
+
+    val defaultDPreference by lazy { DPreference(this, packageName + "_preferences") }
 
     override fun onCreate() {
         super.onCreate()
@@ -32,3 +35,6 @@ class ActiniumApplication : Application() {
 
 val Context.v2RayApplication: ActiniumApplication
     get() = applicationContext as ActiniumApplication
+
+val Context.defaultDPreference: DPreference
+    get() = v2RayApplication.defaultDPreference

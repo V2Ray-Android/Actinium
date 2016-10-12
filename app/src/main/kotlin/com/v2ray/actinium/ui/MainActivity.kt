@@ -17,6 +17,7 @@ import android.view.MenuItem
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
+import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.extension.alert
 import com.v2ray.actinium.extra.IV2RayServiceCallbackStub
 import com.v2ray.actinium.service.V2RayVpnService
@@ -189,7 +190,7 @@ class MainActivity : BaseActivity() {
             retFile.writeText(formatted)
 
             if (!fabChecked)
-                defaultSharedPreferences.edit().putString(ConfigManager.PREF_CURR_CONFIG, name).apply()
+                defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, name)
 
             adapter.updateConfigList()
         } else {
@@ -200,7 +201,7 @@ class MainActivity : BaseActivity() {
                     retFile.writeText(formatted)
 
                     if (!fabChecked)
-                        defaultSharedPreferences.edit().putString(ConfigManager.PREF_CURR_CONFIG, name).apply()
+                        defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, name)
 
                     adapter.updateConfigList()
                 }

@@ -14,6 +14,8 @@ import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
+import com.v2ray.actinium.defaultDPreference
+import com.v2ray.actinium.extension.onClick
 import com.v2ray.actinium.service.V2RayVpnService
 import de.psdev.licensesdialog.LicensesDialogFragment
 import org.jetbrains.anko.act
@@ -82,18 +84,16 @@ class SettingsActivity : BaseActivity() {
             super.onCreate(savedInstanceState)
             addPreferencesFromResource(R.xml.pref_settings)
 
-            licenses.setOnPreferenceClickListener {
+            licenses.onClick {
                 val fragment = LicensesDialogFragment.Builder(act)
                         .setNotices(R.raw.licenses)
                         .setIncludeOwnLicense(false)
                         .build()
                 fragment.show((act as AppCompatActivity).supportFragmentManager, null)
-                true
             }
 
-            feedback.setOnPreferenceClickListener {
+            feedback.onClick {
                 openUri("https://github.com/V2Ray-Android/Actinium/issues")
-                true
             }
         }
 
@@ -116,8 +116,16 @@ class SettingsActivity : BaseActivity() {
 
         override fun onSharedPreferenceChanged(sharedPreferences: SharedPreferences, key: String?) {
             when (key) {
-                PREF_FOREGROUND_SERVICE ->
+                PREF_FOREGROUND_SERVICE -> {
+                    act.defaultDPreference.setPrefBoolean(key, sharedPreferences.getBoolean(key, false))
                     bgService?.onPrefForegroundServiceChanged(sharedPreferences.getBoolean(key, false))
+                }
+
+                PREF_AUTO_RESTART ->
+                    act.defaultDPreference.setPrefBoolean(key, sharedPreferences.getBoolean(key, false))
+
+                PREF_PER_APP_PROXY ->
+                    act.defaultDPreference.setPrefBoolean(key, sharedPreferences.getBoolean(key, false))
             }
         }
 

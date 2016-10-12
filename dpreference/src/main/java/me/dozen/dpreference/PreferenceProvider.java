@@ -45,7 +45,7 @@ public class PreferenceProvider extends ContentProvider {
         sUriMatcher.addURI(AUTHORITY, "string/*/*", PREF_STRING);
         sUriMatcher.addURI(AUTHORITY, "integer/*/*", PREF_INT);
         sUriMatcher.addURI(AUTHORITY, "long/*/*", PREF_LONG);
-        sUriMatcher.addURI(AUTHORITY, "string_set/*/*", PREF_STRING);
+        sUriMatcher.addURI(AUTHORITY, "string_set/*/*", PREF_STRING_SET);
 
     }
 

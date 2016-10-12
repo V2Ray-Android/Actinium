@@ -10,6 +10,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import com.v2ray.actinium.R
+import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.extension.alert
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
@@ -19,7 +20,6 @@ import org.jetbrains.anko.*
 import java.util.*
 
 class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapter<MainRecyclerAdapter.MainViewHolder>() {
-    private val preference = activity.defaultSharedPreferences
     private lateinit var configs: Array<out String>
 
     var actionMode: ActionMode? = null
@@ -63,7 +63,7 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
 
                             if (oriFile.renameTo(newFile) &&
                                     activity.currConfigName == oriName)
-                                preference.edit().putString(ConfigManager.PREF_CURR_CONFIG, newName).apply()
+                                activity.defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, newName)
 
                             updateConfigList()
                             actionMode?.finish()
@@ -136,7 +136,7 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
             if (changeable) {
                 holder.radio.isEnabled = true
                 holder.radio.onClick {
-                    preference.edit().putString(ConfigManager.PREF_CURR_CONFIG, name).apply()
+                    activity.defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, name)
                     notifyDataSetChanged()
                 }
 

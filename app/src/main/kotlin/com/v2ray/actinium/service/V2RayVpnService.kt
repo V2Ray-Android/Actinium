@@ -16,6 +16,7 @@ import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork
 import com.orhanobut.logger.Logger
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayServiceCallback
+import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.extension.broadcastAll
 import com.v2ray.actinium.extra.IV2RayServiceStub
 import com.v2ray.actinium.ui.BypassListActivity
@@ -23,15 +24,13 @@ import com.v2ray.actinium.ui.MainActivity
 import com.v2ray.actinium.ui.SettingsActivity
 import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.currConfigFile
+import com.v2ray.actinium.util.currConfigName
 import go.libv2ray.Libv2ray
 import go.libv2ray.V2RayCallbacks
 import go.libv2ray.V2RayVPNServiceSupportsSet
-import org.jetbrains.anko.defaultSharedPreferences
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
-import java.io.File
-import java.util.*
 import java.util.concurrent.TimeUnit
 
 class V2RayVpnService : VpnService() {
@@ -42,27 +41,7 @@ class V2RayVpnService : VpnService() {
         const val ACTION_STOP_V2RAY = "com.v2ray.actinium.action.STOP_V2RAY"
 
         fun startV2Ray(context: Context) {
-
             val intent = Intent(context.applicationContext, V2RayVpnService::class.java)
-
-            val configFile = context.currConfigFile
-            intent.putExtra("configPath", configFile.absolutePath)
-
-            val autoRestart = context.defaultSharedPreferences
-                    .getBoolean(SettingsActivity.PREF_AUTO_RESTART, false)
-                    && ConfigUtil.isKcpConfig(configFile.readText())
-            intent.putExtra("autoRestart", autoRestart)
-
-            val foregroundService = context.defaultSharedPreferences
-                    .getBoolean(SettingsActivity.PREF_FOREGROUND_SERVICE, false)
-            intent.putExtra("foregroundService", foregroundService)
-
-            if (context.defaultSharedPreferences.getBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
-                val bypassList = context.defaultSharedPreferences
-                        .getStringSet(BypassListActivity.PREF_BYPASS_LIST_SET, HashSet())
-                intent.putExtra("bypassList", bypassList.toTypedArray())
-            }
-
             context.startService(intent)
         }
     }
@@ -70,7 +49,8 @@ class V2RayVpnService : VpnService() {
     private val v2rayPoint = Libv2ray.newV2RayPoint()
     private val v2rayCallback = V2RayCallback()
     private var connectivitySubscription: Subscription? = null
-    private var bypassList: Array<String>? = null
+
+    private lateinit var configContent: String
 
     private val stopV2RayReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctx: Context?, intent: Intent?) {
@@ -134,10 +114,6 @@ class V2RayVpnService : VpnService() {
         v2rayPoint.packageName = packageName
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
     override fun onRevoke() {
         stopV2Ray()
     }
@@ -158,24 +134,23 @@ class V2RayVpnService : VpnService() {
 
         }
 
-        val configFile = File(v2rayPoint.configureFile)
+        builder.setSession(currConfigName)
 
-        builder.setSession(configFile.name)
-
-        val conf = configFile.readText()
-        val dnsServers = ConfigUtil.readDnsServersFromConfig(conf, "8.8.8.8", "8.8.4.4")
+        val dnsServers = ConfigUtil.readDnsServersFromConfig(configContent, "8.8.8.8", "8.8.4.4")
         for (dns in dnsServers)
             builder.addDnsServer(dns)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            bypassList?.let {
-                for (app in it)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+                defaultDPreference.getPrefBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
+            val bypaasList = defaultDPreference.getPrefStringSet(BypassListActivity.PREF_BYPASS_LIST_SET, null)
+            if (bypaasList != null)
+                for (app in bypaasList)
                     try {
                         builder.addDisallowedApplication(app)
                     } catch (e: PackageManager.NameNotFoundException) {
                         Logger.d(e)
                     }
-            }
+
 
         }
 
@@ -190,13 +165,8 @@ class V2RayVpnService : VpnService() {
         Log.i("VPNService", "New interface: " + parameters)
     }
 
-    override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
-        val configPath = intent.getStringExtra("configPath") ?: currConfigFile.absolutePath
-        val autoRestart = intent.getBooleanExtra("autoRestart", false)
-        val foregroundService = intent.getBooleanExtra("foregroundService", false)
-        bypassList = intent.getStringArrayExtra("bypassList")
-
-        startV2ray(configPath, autoRestart, foregroundService)
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        startV2ray()
 
         return super.onStartCommand(intent, flags, startId)
     }
@@ -212,12 +182,16 @@ class V2RayVpnService : VpnService() {
         serviceCallbacks.broadcastAll { it.onStateChanged(true) }
     }
 
-    private fun startV2ray(configPath: String, autoRestart: Boolean, foregroundService: Boolean) {
+    private fun startV2ray() {
         if (!v2rayPoint.isRunning) {
 
             registerReceiver(stopV2RayReceiver, IntentFilter(ACTION_STOP_V2RAY))
 
-            if (autoRestart)
+            configContent = currConfigFile.readText()
+
+            if (defaultDPreference
+                    .getPrefBoolean(SettingsActivity.PREF_AUTO_RESTART, false)
+                    && ConfigUtil.isKcpConfig(configContent))
                 connectivitySubscription = ReactiveNetwork.observeNetworkConnectivity(this.applicationContext)
                         .subscribeOn(Schedulers.io())
                         .skip(1)
@@ -231,11 +205,12 @@ class V2RayVpnService : VpnService() {
 
             v2rayPoint.callbacks = v2rayCallback
             v2rayPoint.vpnSupportSet = v2rayCallback
-            v2rayPoint.configureFile = configPath
+            v2rayPoint.configureFile = "V2Ray_internal/ConfigureFileContent"
+            v2rayPoint.configureFileContent = configContent
             v2rayPoint.runLoop()
         }
 
-        if (foregroundService)
+        if (defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FOREGROUND_SERVICE, false))
             showNotification()
     }
 
@@ -266,12 +241,10 @@ class V2RayVpnService : VpnService() {
                 NOTIFICATION_PENDING_INTENT_STOP_V2RAY, stopV2RayIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val configName = File(v2rayPoint.configureFile).name
-
         val notification = NotificationCompat.Builder(applicationContext)
                 .setSmallIcon(R.drawable.ic_action_logo)
                 .setContentTitle(getString(R.string.notification_content_title))
-                .setContentText(getString(R.string.notification_content_text, configName))
+                .setContentText(getString(R.string.notification_content_text, currConfigName))
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setContentIntent(contentPendingIntent)
                 .addAction(R.drawable.ic_close_grey_800_24dp,

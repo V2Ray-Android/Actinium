@@ -2,7 +2,7 @@ package com.v2ray.actinium.util
 
 import android.content.Context
 import com.v2ray.actinium.ActiniumApplication
-import org.jetbrains.anko.defaultSharedPreferences
+import com.v2ray.actinium.defaultDPreference
 import java.io.File
 
 object ConfigManager {
@@ -33,4 +33,4 @@ object ConfigManager {
 
 val Context.currConfigFile: File get() = File(ConfigManager.configFileDir, currConfigName)
 
-val Context.currConfigName: String get() = defaultSharedPreferences.getString(ConfigManager.PREF_CURR_CONFIG, "default")
+val Context.currConfigName: String get() = defaultDPreference.getPrefString(ConfigManager.PREF_CURR_CONFIG, "default")

@@ -6,10 +6,10 @@ import android.view.Menu
 import android.view.MenuItem
 import com.dinuscxj.itemdecoration.LinearDividerItemDecoration
 import com.v2ray.actinium.R
+import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.util.AppInfo
 import com.v2ray.actinium.util.AppManagerUtil
 import kotlinx.android.synthetic.main.activity_bypass_list.*
-import org.jetbrains.anko.defaultSharedPreferences
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.text.Collator
@@ -49,7 +49,7 @@ class BypassListActivity : BaseActivity() {
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    val blacklist = defaultSharedPreferences.getStringSet(PREF_BYPASS_LIST_SET, null)
+                    val blacklist = defaultDPreference.getPrefStringSet(PREF_BYPASS_LIST_SET, null)
                     adapter = BypassListRecyclerAdapter(it, blacklist)
                     recycler_view.adapter = adapter
                     dialog.dismiss()
@@ -59,7 +59,7 @@ class BypassListActivity : BaseActivity() {
     override fun onPause() {
         super.onPause()
         adapter?.let {
-            defaultSharedPreferences.edit().putStringSet(PREF_BYPASS_LIST_SET, it.blacklist).apply()
+            defaultDPreference.setPrefStringSet(PREF_BYPASS_LIST_SET, it.blacklist)
         }
     }
 
