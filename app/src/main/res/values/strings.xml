@@ -17,8 +17,6 @@
     <string name="toast_require_file_manager">Please install a File Manager.</string>
     <string name="toast_permission_denied">Unable to obtain the permission</string>
     <string name="toast_config_file_invalid">Config file invalid.</string>
-    <string name="toast_v2ray_is_starting">V2Ray is starting</string>
-    <string name="toast_v2ray_is_stopping">V2Ray is stopping</string>
 
     <!-- SettingsActivity -->
     <string name="title_activity_settings">Settings</string>

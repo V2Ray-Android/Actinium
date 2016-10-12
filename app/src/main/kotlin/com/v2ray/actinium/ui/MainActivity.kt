@@ -9,7 +9,6 @@ import android.net.Uri
 import android.net.VpnService
 import android.os.Bundle
 import android.os.IBinder
-import android.support.design.widget.Snackbar
 import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
@@ -84,7 +83,6 @@ class MainActivity : BaseActivity() {
         fab.setOnClickListener {
             if (fabChecked) {
                 bgService?.stopV2Ray()
-                Snackbar.make(it, R.string.toast_v2ray_is_stopping, Snackbar.LENGTH_SHORT).show()
             } else {
                 val intent = VpnService.prepare(this)
                 if (intent == null)

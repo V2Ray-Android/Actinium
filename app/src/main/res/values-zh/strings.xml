@@ -17,8 +17,6 @@
     <string name="toast_require_file_manager">请安装一个文件管理器</string>
     <string name="toast_permission_denied">无法取得权限</string>
     <string name="toast_config_file_invalid">配置文件无效</string>
-    <string name="toast_v2ray_is_starting">正在启动 V2Ray</string>
-    <string name="toast_v2ray_is_stopping">正在停止 V2Ray</string>
 
     <!-- SettingsActivity -->
     <string name="title_activity_settings">设定</string>
