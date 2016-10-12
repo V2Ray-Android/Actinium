@@ -14,9 +14,6 @@ android {
         versionName "0.5.3"
     }
     buildTypes {
-        debug {
-            applicationIdSuffix '.debug'
-        }
         release {
             shrinkResources true
             minifyEnabled true
@@ -94,6 +91,10 @@ dependencies {
     testCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.4'
 
     compile 'io.reactivex:rxkotlin:0.60.0'
+
+    // Firebase
+    compile "com.google.firebase:firebase-core:$firebaseVersion"
+    compile "com.google.firebase:firebase-crash:$firebaseVersion"
 }
 
 buildscript {
@@ -104,3 +105,5 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
     }
 }
+
+apply plugin: 'com.google.gms.google-services'
