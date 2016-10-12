@@ -48,7 +48,7 @@ class BypassListRecyclerAdapter(val apps: List<AppInfo>, blacklist: MutableSet<S
             }
 
             name.textColor = itemView.context.resources.getColor(if (appInfo.isSystemApp)
-                R.color.abc_color_highlight_material else R.color.abc_secondary_text_material_light)
+                R.color.color_highlight_material else R.color.abc_secondary_text_material_light)
 
             itemView.setOnClickListener(this)
         }
