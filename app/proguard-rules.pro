@@ -29,8 +29,26 @@
 -dontwarn org.apache.commons.**
 -keep class org.apache.commons.** { *;}
 
--dontwarn rx.**
--keep class rx.** { *;}
+# Disable debug info output
+-assumenosideeffects class android.util.Log {
+    public static boolean isLoggable(java.lang.String,int);
+    public static int v(...);
+    public static int i(...);
+    public static int w(...);
+    public static int d(...);
+    public static int e(...);
+}
+-assumenosideeffects class kotlin.jvm.internal.Intrinsics {
+    static void checkParameterIsNotNull(java.lang.Object, java.lang.String);
+    static void checkExpressionValueIsNotNull(java.lang.Object, java.lang.String);
+    static void throwUninitializedPropertyAccessException(java.lang.String);
+}
+
+-dontwarn org.jetbrains.anko.internals.**
+-keep class org.jetbrains.anko.internals.** { *;}
+
+-dontwarn rx.internal.util.unsafe.**
+-keep class rx.internal.util.unsafe.** { *;}
 
 -dontwarn app.dinus.**
 -keep class app.dinus.** { *;}
@@ -39,5 +57,3 @@
     @com.hwangjr.rxbus.annotation.Subscribe public *;
     @com.hwangjr.rxbus.annotation.Produce public *;
 }
--dontwarn com.hwangjr.rxbus.**
--keep class com.hwangjr.rxbus.** { *;}
