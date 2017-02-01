@@ -11,12 +11,6 @@
             android:summary="@string/summary_pref_per_app_proxy"
             android:title="@string/title_pref_per_app_proxy" />
 
-        <Preference
-            android:dependency="pref_per_app_proxy"
-            android:key="pref_edit_bypass_list"
-            android:summary="@string/summary_pref_edit_bypass_list"
-            android:title="@string/title_pref_edit_bypass_list" />
-
         <CheckBoxPreference
             android:key="pref_auto_restart"
             android:summary="@string/summary_pref_auto_restart"

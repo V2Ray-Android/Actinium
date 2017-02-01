@@ -26,7 +26,7 @@ abstract class IV2RayServiceCallbackStub(val context: Context) : IV2RayServiceCa
     override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
         var packageName: String? = null
         val packages = context.packageManager.getPackagesForUid(getCallingUid())
-        if (packages != null && packages.size > 0) {
+        if (packages != null && packages.isNotEmpty()) {
             packageName = packages[0]
         }
         if (packageName != BuildConfig.APPLICATION_ID) {
@@ -41,7 +41,7 @@ abstract class IV2RayServiceStub(val context: Context) : IV2RayService.Stub() {
     override fun onTransact(code: Int, data: Parcel?, reply: Parcel?, flags: Int): Boolean {
         var packageName: String? = null
         val packages = context.packageManager.getPackagesForUid(getCallingUid())
-        if (packages != null && packages.size > 0) {
+        if (packages != null && packages.isNotEmpty()) {
             packageName = packages[0]
         }
         if (packageName != BuildConfig.APPLICATION_ID) {

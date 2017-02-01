@@ -35,8 +35,8 @@
             android:label="@string/title_activity_settings" />
 
         <activity
-            android:name=".ui.BypassListActivity"
-            android:label="@string/title_activity_bypass_list" />
+            android:name=".ui.PerAppProxyActivity"
+            android:label="@string/title_pref_per_app_proxy" />
 
         <service
             android:name=".service.V2RayVpnService"

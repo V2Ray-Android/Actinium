@@ -26,7 +26,6 @@ class SettingsActivity : BaseActivity() {
     companion object {
         const val PREF_START_ON_BOOT = "pref_start_on_boot"
         const val PREF_PER_APP_PROXY = "pref_per_app_proxy"
-        const val PREF_EDIT_BYPASS_LIST = "pref_edit_bypass_list"
         const val PREF_LICENSES = "pref_licenses"
         const val PREF_FEEDBACK = "pref_feedback"
         const val PREF_AUTO_RESTART = "pref_auto_restart"
@@ -41,9 +40,8 @@ class SettingsActivity : BaseActivity() {
     }
 
     class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
-        val blacklist by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
+        val perAppProxy by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
         val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
-        val editBlacklist: Preference by lazy { findPreference(PREF_EDIT_BYPASS_LIST) }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
         val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
 
@@ -64,18 +62,16 @@ class SettingsActivity : BaseActivity() {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     if (isV2RayRunning) {
-                        blacklist.isEnabled = false
-                        editBlacklist.isEnabled = false
+                        perAppProxy.isEnabled = false
                     } else {
-                        editBlacklist.setOnPreferenceClickListener {
-                            startActivity<BypassListActivity>()
-                            true
+                        perAppProxy.setOnPreferenceClickListener {
+                            startActivity<PerAppProxyActivity>()
+                            perAppProxy.isChecked = true
+                            false
                         }
                     }
                 } else {
-                    blacklist.summary = getString(R.string.summary_pref_per_app_proxy_pre_lollipop)
-                    blacklist.isEnabled = false
-                    editBlacklist.isEnabled = false
+                    perAppProxy.isEnabled = false
                 }
             }
         }
@@ -102,6 +98,8 @@ class SettingsActivity : BaseActivity() {
 
             val intent = Intent(act.applicationContext, V2RayVpnService::class.java)
             act.bindService(intent, conn, BIND_AUTO_CREATE)
+
+            perAppProxy.isChecked = defaultSharedPreferences.getBoolean(PREF_PER_APP_PROXY, false)
 
             defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
         }

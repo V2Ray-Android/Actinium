@@ -21,11 +21,13 @@
     <!-- SettingsActivity -->
     <string name="title_activity_settings">Settings</string>
     <string name="menu_item_del_config">Delete config</string>
+    <string name="switch_bypass_apps_on">Don\'t proxy selected apps</string>
+    <string name="switch_bypass_apps_off">Proxy selected apps</string>
 
-    <!-- BypassListActivity -->
-    <string name="title_activity_bypass_list">Bypass list</string>
+    <!-- PerAppProxyActivity -->
     <string name="msg_dialog_progress">Loading</string>
     <string name="menu_item_select_all">Select all</string>
+    
 
     <!-- Preferences -->
     <string name="title_settings">Settings</string>
@@ -35,11 +37,7 @@
     <string name="summary_pref_start_on_boot">Start V2Ray on startup</string>
 
     <string name="title_pref_per_app_proxy">Per-app proxy</string>
-    <string name="summary_pref_per_app_proxy">Apps which added to the bypass list will access internet without V2Ray (connect directly)</string>
-    <string name="summary_pref_per_app_proxy_pre_lollipop">Per-app proxy mode only support Android Lollipop or higher</string>
-
-    <string name="title_pref_edit_bypass_list">Edit bypass list</string>
-    <string name="summary_pref_edit_bypass_list">Edit the bypass list</string>
+    <string name="summary_pref_per_app_proxy">Per-app proxy mode only support Android Lollipop or higher</string>
 
     <string name="title_pref_feedback">Feedback</string>
     <string name="summary_pref_feedback">Feedback enhancements or bugs to GitHub</string>

@@ -19,8 +19,8 @@ import com.v2ray.actinium.aidl.IV2RayServiceCallback
 import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.extension.broadcastAll
 import com.v2ray.actinium.extra.IV2RayServiceStub
-import com.v2ray.actinium.ui.BypassListActivity
 import com.v2ray.actinium.ui.MainActivity
+import com.v2ray.actinium.ui.PerAppProxyActivity
 import com.v2ray.actinium.ui.SettingsActivity
 import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.currConfigFile
@@ -123,16 +123,16 @@ class V2RayVpnService : VpnService() {
         // Configure a builder while parsing the parameters.
         val builder = Builder()
 
-        for (parameter in parameters.split(" ")) {
-            val fields = parameter.split(",")
-            when (fields[0][0]) {
-                'm' -> builder.setMtu(java.lang.Short.parseShort(fields[1]).toInt())
-                'a' -> builder.addAddress(fields[1], Integer.parseInt(fields[2]))
-                'r' -> builder.addRoute(fields[1], Integer.parseInt(fields[2]))
-                's' -> builder.addSearchDomain(fields[1])
-            }
-
-        }
+        parameters.split(" ")
+                .map { it.split(",") }
+                .forEach {
+                    when (it[0][0]) {
+                        'm' -> builder.setMtu(java.lang.Short.parseShort(it[1]).toInt())
+                        'a' -> builder.addAddress(it[1], Integer.parseInt(it[2]))
+                        'r' -> builder.addRoute(it[1], Integer.parseInt(it[2]))
+                        's' -> builder.addSearchDomain(it[1])
+                    }
+                }
 
         builder.setSession(currConfigName)
 
@@ -142,14 +142,18 @@ class V2RayVpnService : VpnService() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                 defaultDPreference.getPrefBoolean(SettingsActivity.PREF_PER_APP_PROXY, false)) {
-            val bypaasList = defaultDPreference.getPrefStringSet(BypassListActivity.PREF_BYPASS_LIST_SET, null)
-            if (bypaasList != null)
-                for (app in bypaasList)
-                    try {
-                        builder.addDisallowedApplication(app)
-                    } catch (e: PackageManager.NameNotFoundException) {
-                        Logger.d(e)
-                    }
+            val apps = defaultDPreference.getPrefStringSet(PerAppProxyActivity.PREF_PER_APP_PROXY_SET, null)
+            val bypassApps = defaultDPreference.getPrefBoolean(PerAppProxyActivity.PREF_BYPASS_APPS, false)
+            apps?.forEach {
+                try {
+                    if (bypassApps)
+                        builder.addDisallowedApplication(it)
+                    else
+                        builder.addAllowedApplication(it)
+                } catch (e: PackageManager.NameNotFoundException) {
+                    Logger.d(e)
+                }
+            }
 
 
         }

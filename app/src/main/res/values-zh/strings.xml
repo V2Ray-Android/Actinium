@@ -22,10 +22,11 @@
     <string name="title_activity_settings">设定</string>
     <string name="menu_item_del_config">删除配置</string>
 
-    <!-- BypassListActivity -->
-    <string name="title_activity_bypass_list">直连列表</string>
+    <!-- PerAppProxyActivity -->
     <string name="msg_dialog_progress">正在加载</string>
     <string name="menu_item_select_all">全选</string>
+    <string name="switch_bypass_apps_on">选中的应用不走代理</string>
+    <string name="switch_bypass_apps_off">选中的应用走代理</string>
 
     <!-- Preferences -->
     <string name="title_settings">设置</string>
@@ -35,11 +36,7 @@
     <string name="summary_pref_start_on_boot">在开机时启动V2Ray</string>
 
     <string name="title_pref_per_app_proxy">分应用代理</string>
-    <string name="summary_pref_per_app_proxy">加入直连列表的应用将不会通过V2Ray访问互联网</string>
-    <string name="summary_pref_per_app_proxy_pre_lollipop">分应用代理仅支持 Android Lollipop 及更高</string>
-
-    <string name="title_pref_edit_bypass_list">编辑直连列表</string>
-    <string name="summary_pref_edit_bypass_list">编辑直连列表</string>
+    <string name="summary_pref_per_app_proxy">分应用代理仅支持 Android Lollipop 及更高</string>
 
     <string name="title_pref_feedback">反馈</string>
     <string name="summary_pref_feedback">反馈改进或漏洞至 GitHub</string>
