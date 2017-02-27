@@ -17,7 +17,11 @@ import com.orhanobut.logger.Logger
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayServiceCallback
 import com.v2ray.actinium.defaultDPreference
+import com.v2ray.actinium.dto.VpnNetworkInfo
 import com.v2ray.actinium.extension.broadcastAll
+import com.v2ray.actinium.extension.loadVpnNetworkInfo
+import com.v2ray.actinium.extension.saveVpnNetworkInfo
+import com.v2ray.actinium.extension.toSpeedString
 import com.v2ray.actinium.extra.IV2RayServiceStub
 import com.v2ray.actinium.ui.MainActivity
 import com.v2ray.actinium.ui.PerAppProxyActivity
@@ -25,12 +29,13 @@ import com.v2ray.actinium.ui.SettingsActivity
 import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.currConfigFile
 import com.v2ray.actinium.util.currConfigName
-import go.libv2ray.Libv2ray
-import go.libv2ray.V2RayCallbacks
-import go.libv2ray.V2RayVPNServiceSupportsSet
+import libv2ray.Libv2ray
+import libv2ray.V2RayCallbacks
+import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 
 class V2RayVpnService : VpnService() {
@@ -49,6 +54,24 @@ class V2RayVpnService : VpnService() {
     private val v2rayPoint = Libv2ray.newV2RayPoint()
     private val v2rayCallback = V2RayCallback()
     private var connectivitySubscription: Subscription? = null
+
+    private val handler = Handler()
+    private val updateNetworkInfoCallback = object : Runnable {
+        override fun run() {
+            vpnNetworkInfo?.let {
+                lastNetworkInfo?.let { last ->
+                    if (defaultDPreference.getPrefBoolean(SettingsActivity.PREF_FOREGROUND_SERVICE, false)) {
+                        val speed = it - last
+                        showNotification("${speed.rxByte.toSpeedString()} ↓ ${speed.txByte.toSpeedString()} ↑")
+                    }
+                }
+                lastNetworkInfo = it
+                serviceCallbacks.broadcastAll { it.onNetworkInfoUpdated(lastNetworkInfo) }
+            }
+            handler.postDelayed(this, 1000)
+        }
+    }
+    private var lastNetworkInfo: VpnNetworkInfo? = null
 
     private lateinit var configContent: String
 
@@ -84,9 +107,7 @@ class V2RayVpnService : VpnService() {
         }
 
         override fun onPrefForegroundServiceChanged(isEnabled: Boolean) {
-            if (isEnabled)
-                showNotification()
-            else
+            if (!isEnabled)
                 cancelNotification()
         }
 
@@ -155,7 +176,6 @@ class V2RayVpnService : VpnService() {
                 }
             }
 
-
         }
 
         // Close the old interface since the parameters have been changed.
@@ -167,6 +187,8 @@ class V2RayVpnService : VpnService() {
         // Create a new interface using the builder and save the parameters.
         mInterface = builder.establish()
         Log.i("VPNService", "New interface: " + parameters)
+
+        handler.postDelayed(updateNetworkInfoCallback, 1000)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -219,6 +241,12 @@ class V2RayVpnService : VpnService() {
     }
 
     private fun stopV2Ray() {
+        handler.removeCallbacks(updateNetworkInfoCallback)
+        val configName = currConfigName
+        val emptyInfo = VpnNetworkInfo()
+        val info = loadVpnNetworkInfo(configName, emptyInfo)!! + (lastNetworkInfo ?: emptyInfo)
+        saveVpnNetworkInfo(configName, info)
+
         if (v2rayPoint.isRunning) {
             v2rayPoint.stopLoop()
         }
@@ -234,7 +262,7 @@ class V2RayVpnService : VpnService() {
         stopSelf()
     }
 
-    private fun showNotification() {
+    private fun showNotification(text: String = "0 Bytes/s ↓ 0 Bytes/s ↑") {
         val startMainIntent = Intent(applicationContext, MainActivity::class.java)
         val contentPendingIntent = PendingIntent.getActivity(applicationContext,
                 NOTIFICATION_PENDING_INTENT_CONTENT, startMainIntent,
@@ -247,8 +275,8 @@ class V2RayVpnService : VpnService() {
 
         val notification = NotificationCompat.Builder(applicationContext)
                 .setSmallIcon(R.drawable.ic_action_logo)
-                .setContentTitle(getString(R.string.notification_content_title))
-                .setContentText(getString(R.string.notification_content_text, currConfigName))
+                .setContentTitle(currConfigName)
+                .setContentText(text)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setContentIntent(contentPendingIntent)
                 .addAction(R.drawable.ic_close_grey_800_24dp,
@@ -262,6 +290,23 @@ class V2RayVpnService : VpnService() {
     private fun cancelNotification() {
         stopForeground(true)
     }
+
+    private val vpnNetworkInfo: VpnNetworkInfo?
+        get() = FileInputStream("/proc/net/dev").bufferedReader().use {
+            val prefix = "tun0:"
+            while (true) {
+                val line = it.readLine().trim()
+                if (line.startsWith(prefix)) {
+                    val numbers = line.substring(prefix.length).split(' ')
+                            .filter(String::isNotEmpty)
+                            .map(String::toInt)
+                    if (numbers.size > 10)
+                        return VpnNetworkInfo(numbers[0], numbers[1], numbers[8], numbers[9])
+                    break
+                }
+            }
+            return null
+        }
 
     private inner class V2RayCallback : V2RayCallbacks, V2RayVPNServiceSupportsSet {
         override fun shutdown() = 0L

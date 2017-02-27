@@ -1,5 +1,6 @@
 package com.v2ray.actinium.ui
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.view.ActionMode
@@ -11,9 +12,11 @@ import android.view.View
 import android.view.ViewGroup
 import com.v2ray.actinium.R
 import com.v2ray.actinium.defaultDPreference
+import com.v2ray.actinium.dto.VpnNetworkInfo
 import com.v2ray.actinium.extension.alert
+import com.v2ray.actinium.extension.loadVpnNetworkInfo
+import com.v2ray.actinium.extension.toTrafficString
 import com.v2ray.actinium.util.ConfigManager
-import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.currConfigName
 import kotlinx.android.synthetic.main.item_recycler_main.view.*
 import org.jetbrains.anko.*
@@ -25,6 +28,7 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
     var actionMode: ActionMode? = null
     var renameItem: MenuItem? = null
     var delItem: MenuItem? = null
+    var notSavedNetworkInfo = VpnNetworkInfo()
 
     val selectedConfigs by lazy { HashSet<String>() }
 
@@ -101,13 +105,20 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
 
     override fun getItemCount() = configs.size
 
+
     override fun onBindViewHolder(holder: MainViewHolder, position: Int) {
         val name = configs[position]
         val conf = ConfigManager.getConfigFileByName(name).readText()
 
         holder.name.text = name
-        holder.address.text = ConfigUtil.readAddressFromConfig(conf)
         holder.radio.isChecked = name == activity.currConfigName
+
+        var info = activity.loadVpnNetworkInfo(name, VpnNetworkInfo())!!
+        if (holder.radio.isChecked && !changeable)
+            info += notSavedNetworkInfo
+
+        @SuppressLint("SetTextI18n")
+        holder.statistics.text = "${info.rxByte.toTrafficString()} ↓ ${info.txByte.toTrafficString()} ↑"
 
         if (actionMode != null) {
             holder.radio.isEnabled = false
@@ -168,10 +179,14 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
         delItem?.isVisible = !selectedConfigs.contains(activity.currConfigName)
     }
 
+    fun updateSelectedItem() {
+        notifyItemChanged(configs.indexOf(activity.currConfigName))
+    }
+
     class MainViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val radio = itemView.btn_radio!!
         val name = itemView.tv_name!!
-        val address = itemView.tv_address!!
+        val statistics = itemView.tv_statistics!!
         val infoContainer = itemView.info_container!!
     }
 }

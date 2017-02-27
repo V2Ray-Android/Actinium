@@ -13,15 +13,19 @@ import android.support.v7.widget.AppCompatEditText
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
+import com.orhanobut.logger.Logger
 import com.tbruyelle.rxpermissions.RxPermissions
 import com.v2ray.actinium.R
 import com.v2ray.actinium.aidl.IV2RayService
 import com.v2ray.actinium.defaultDPreference
+import com.v2ray.actinium.dto.VpnNetworkInfo
 import com.v2ray.actinium.extension.alert
+import com.v2ray.actinium.extension.loadVpnNetworkInfo
 import com.v2ray.actinium.extra.IV2RayServiceCallbackStub
 import com.v2ray.actinium.service.V2RayVpnService
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
+import com.v2ray.actinium.util.currConfigName
 import kotlinx.android.synthetic.main.activity_main.*
 import org.jetbrains.anko.*
 import java.io.File
@@ -29,7 +33,6 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 
 class MainActivity : BaseActivity() {
-
 
     companion object {
         private const val REQUEST_CODE_VPN_PREPARE = 0
@@ -69,16 +72,23 @@ class MainActivity : BaseActivity() {
     }
 
     val serviceCallback = object : IV2RayServiceCallbackStub(this) {
-        override fun onStateChanged(isRunning: Boolean) {
-            onUiThread {
-                fabChecked = isRunning
+        override fun onNetworkInfoUpdated(info: VpnNetworkInfo?) {
+            info?.let {
+                adapter.notSavedNetworkInfo = it
+                onUiThread { adapter.updateSelectedItem() }
             }
+        }
+
+        override fun onStateChanged(isRunning: Boolean) {
+            onUiThread { fabChecked = isRunning }
         }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        Logger.d(loadVpnNetworkInfo(currConfigName, VpnNetworkInfo()))
 
         fab.setOnClickListener {
             if (fabChecked) {
