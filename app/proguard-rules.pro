@@ -57,3 +57,5 @@
     @com.hwangjr.rxbus.annotation.Subscribe public *;
     @com.hwangjr.rxbus.annotation.Produce public *;
 }
+
+-keep class libv2ray.** { *;}

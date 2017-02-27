@@ -37,6 +37,7 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
             if (field == value)
                 return
             field = value
+            notSavedNetworkInfo = VpnNetworkInfo()
             notifyDataSetChanged()
         }
 
