@@ -27,7 +27,10 @@ import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.ConfigUtil
 import com.v2ray.actinium.util.currConfigName
 import kotlinx.android.synthetic.main.activity_main.*
-import org.jetbrains.anko.*
+import org.jetbrains.anko.imageResource
+import org.jetbrains.anko.singleLine
+import org.jetbrains.anko.startActivity
+import org.jetbrains.anko.toast
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.InputStream
@@ -75,12 +78,12 @@ class MainActivity : BaseActivity() {
         override fun onNetworkInfoUpdated(info: VpnNetworkInfo?) {
             info?.let {
                 adapter.notSavedNetworkInfo = it
-                onUiThread { adapter.updateSelectedItem() }
+                runOnUiThread { adapter.updateSelectedItem() }
             }
         }
 
         override fun onStateChanged(isRunning: Boolean) {
-            onUiThread { fabChecked = isRunning }
+            runOnUiThread { fabChecked = isRunning }
         }
     }
 

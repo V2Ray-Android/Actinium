@@ -16,7 +16,6 @@ import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.util.AppInfo
 import com.v2ray.actinium.util.AppManagerUtil
 import kotlinx.android.synthetic.main.activity_bypass_list.*
-import org.jetbrains.anko.onClick
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
 import java.text.Collator
@@ -124,11 +123,11 @@ class PerAppProxyActivity : BaseActivity() {
         tv_bypass_apps.setText(if (switch_bypass_apps.isChecked) R.string.switch_bypass_apps_on else
             R.string.switch_bypass_apps_off)
 
-        container_per_app_proxy.onClick {
+        container_per_app_proxy.setOnClickListener {
             switch_bypass_apps.performClick()
         }
 
-        container_bypass_apps.onClick {
+        container_bypass_apps.setOnClickListener {
             switch_bypass_apps.performClick()
         }
     }

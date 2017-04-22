@@ -124,7 +124,7 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
         if (actionMode != null) {
             holder.radio.isEnabled = false
 
-            holder.infoContainer.onClick {
+            holder.infoContainer.setOnClickListener {
                 if (selectedConfigs.contains(name)) {
                     selectedConfigs.remove(name)
 
@@ -140,19 +140,19 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
             holder.itemView.backgroundResource = if (selectedConfigs.contains(name))
                 R.color.bg_item_selected else Color.TRANSPARENT
         } else {
-            holder.infoContainer.onClick {
+            holder.infoContainer.setOnClickListener {
                 holder.infoContainer.context.startActivity<TextActivity>("title" to name, "text" to conf)
             }
             holder.itemView.backgroundColor = Color.TRANSPARENT
 
             if (changeable) {
                 holder.radio.isEnabled = true
-                holder.radio.onClick {
+                holder.radio.setOnClickListener {
                     activity.defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, name)
                     notifyDataSetChanged()
                 }
 
-                holder.infoContainer.onLongClick {
+                holder.infoContainer.setOnLongClickListener {
                     actionMode = activity.supportActionBar?.startActionMode(actionModeCallback)
                     selectedConfigs.add(name)
                     updateActionModeStatus()

@@ -19,6 +19,8 @@ object ConfigManager {
         if (app.firstRun) {
             if (!configFileDir.exists() || !configFileDir.isDirectory)
                 configFileDir.mkdirs()
+
+            // TODO: The official server has been suspended
             AssetsUtil.copyAsset(app.assets, "conf_default.json", File(configFileDir, "default").absolutePath)
         }
     }
