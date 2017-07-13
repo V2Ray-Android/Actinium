@@ -25,10 +25,14 @@ class ActiniumApplication : Application() {
 
         LeakCanary.install(this)
 
-        firstRun = defaultSharedPreferences.getInt(PREF_LAST_VERSION, 0) != BuildConfig.VERSION_CODE
+        val lastVersion = defaultSharedPreferences.getInt(PREF_LAST_VERSION, 0)
+
+        if (lastVersion < 25)
+            getSharedPreferences(VPN_NETWORK_STATISTICS, Context.MODE_PRIVATE).edit().clear().apply()
+
+        firstRun = lastVersion != BuildConfig.VERSION_CODE
         if (firstRun) {
             defaultSharedPreferences.edit().putInt(PREF_LAST_VERSION, BuildConfig.VERSION_CODE).apply()
-            getSharedPreferences(VPN_NETWORK_STATISTICS, Context.MODE_PRIVATE).edit().clear().apply()
         }
 
         Logger.init().logLevel(if (BuildConfig.DEBUG) LogLevel.FULL else LogLevel.NONE)
