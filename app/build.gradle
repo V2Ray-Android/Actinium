@@ -11,8 +11,8 @@ android {
         applicationId "com.v2ray.actinium"
         minSdkVersion 15
         targetSdkVersion Integer.parseInt("$targetSdkVer")
-        versionCode 22
-        versionName "0.8.1"
+        versionCode 23
+        versionName "0.9.0"
     }
 
     signingConfigs {
@@ -121,7 +121,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
-        classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.2'
+        classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.3'
     }
 }
 
@@ -179,7 +179,7 @@ andResGuard {
             "resources.arsc"
     ]
     sevenzip {
-        artifact = 'com.tencent.mm:SevenZip:1.2.2'
+        artifact = 'com.tencent.mm:SevenZip:1.2.3'
         //path = "/usr/local/bin/7za"
     }
 }
