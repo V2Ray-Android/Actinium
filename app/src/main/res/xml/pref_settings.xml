@@ -30,6 +30,18 @@
         <Preference
             android:key="pref_feedback"
             android:summary="@string/summary_pref_feedback"
-            android:title="@string/title_pref_feedback" />
+            android:title="@string/title_pref_feedback">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/V2Ray-Android/Actinium/issues" />
+        </Preference>
+
+        <Preference
+            android:key="pref_core_version"
+            android:title="@string/title_pref_core_version">
+            <intent
+                android:action="android.intent.action.VIEW"
+                android:data="https://github.com/v2ray/v2ray-core" />
+        </Preference>
     </PreferenceCategory>
 </PreferenceScreen>

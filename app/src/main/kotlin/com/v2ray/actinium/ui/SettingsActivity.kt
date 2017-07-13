@@ -4,7 +4,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.content.ServiceConnection
 import android.content.SharedPreferences
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
@@ -18,6 +17,7 @@ import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.extension.onClick
 import com.v2ray.actinium.service.V2RayVpnService
 import de.psdev.licensesdialog.LicensesDialogFragment
+import libv2ray.Libv2ray
 import org.jetbrains.anko.act
 import org.jetbrains.anko.defaultSharedPreferences
 import org.jetbrains.anko.startActivity
@@ -30,6 +30,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_FEEDBACK = "pref_feedback"
         const val PREF_AUTO_RESTART = "pref_auto_restart"
         const val PREF_FOREGROUND_SERVICE = "pref_foreground_service"
+        const val PREF_CORE_VERSION = "pref_core_version"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -44,6 +45,7 @@ class SettingsActivity : BaseActivity() {
         val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
         val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
+        val coreVersion: Preference by lazy { findPreference(PREF_CORE_VERSION) }
 
         var bgService: IV2RayService? = null
 
@@ -88,9 +90,7 @@ class SettingsActivity : BaseActivity() {
                 fragment.show((act as AppCompatActivity).supportFragmentManager, null)
             }
 
-            feedback.onClick {
-                openUri("https://github.com/V2Ray-Android/Actinium/issues")
-            }
+            coreVersion.summary = Libv2ray.checkVersionX()
         }
 
         override fun onStart() {
@@ -125,11 +125,6 @@ class SettingsActivity : BaseActivity() {
                 PREF_PER_APP_PROXY ->
                     act.defaultDPreference.setPrefBoolean(key, sharedPreferences.getBoolean(key, false))
             }
-        }
-
-        private fun openUri(uriString: String) {
-            val uri = Uri.parse(uriString)
-            startActivity(Intent(Intent.ACTION_VIEW, uri))
         }
     }
 }

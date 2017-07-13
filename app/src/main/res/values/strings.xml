@@ -47,4 +47,6 @@
 
     <string name="title_pref_foreground_service">Foreground service</string>
     <string name="summary_pref_foreground_service">Use foreground service to prevent it from being killed by system, this will display a notification</string>
+
+    <string name="title_pref_core_version">V2Ray core version</string>
 </resources>
