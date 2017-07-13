@@ -4,8 +4,8 @@ import android.os.Parcel
 import android.os.Parcelable
 import android.util.Base64
 
-data class VpnNetworkInfo(val rxByte: Int = 0, val rxPacket: Int = 0, val txByte: Int = 0,
-                          val txPacket: Int = 0) : Parcelable {
+data class VpnNetworkInfo(val rxByte: Long = 0, val rxPacket: Long = 0, val txByte: Long = 0,
+                          val txPacket: Long = 0) : Parcelable {
     companion object {
         @JvmField val CREATOR: Parcelable.Creator<VpnNetworkInfo> = object : Parcelable.Creator<VpnNetworkInfo> {
             override fun createFromParcel(source: Parcel): VpnNetworkInfo = VpnNetworkInfo(source)
@@ -13,15 +13,15 @@ data class VpnNetworkInfo(val rxByte: Int = 0, val rxPacket: Int = 0, val txByte
         }
     }
 
-    constructor(source: Parcel) : this(source.readInt(), source.readInt(), source.readInt(), source.readInt())
+    constructor(source: Parcel) : this(source.readLong(), source.readLong(), source.readLong(), source.readLong())
 
     override fun describeContents() = 0
 
     override fun writeToParcel(dest: Parcel?, flags: Int) {
-        dest?.writeInt(rxByte)
-        dest?.writeInt(rxPacket)
-        dest?.writeInt(txByte)
-        dest?.writeInt(txPacket)
+        dest?.writeLong(rxByte)
+        dest?.writeLong(rxPacket)
+        dest?.writeLong(txByte)
+        dest?.writeLong(txPacket)
     }
 
     operator infix fun minus(other: VpnNetworkInfo)

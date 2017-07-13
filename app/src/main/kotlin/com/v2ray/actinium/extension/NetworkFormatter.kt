@@ -3,9 +3,9 @@ package com.v2ray.actinium.extension
 const val threshold = 1000
 const val divisor = 1024F
 
-fun Int.toSpeedString() = toTrafficString() + "/s"
+fun Long.toSpeedString() = toTrafficString() + "/s"
 
-fun Int.toTrafficString(): String {
+fun Long.toTrafficString(): String {
     if (this < threshold)
         return "$this Bytes"
 

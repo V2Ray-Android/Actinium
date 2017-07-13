@@ -15,6 +15,7 @@ import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.dto.VpnNetworkInfo
 import com.v2ray.actinium.extension.alert
 import com.v2ray.actinium.extension.loadVpnNetworkInfo
+import com.v2ray.actinium.extension.saveVpnNetworkInfo
 import com.v2ray.actinium.extension.toTrafficString
 import com.v2ray.actinium.util.ConfigManager
 import com.v2ray.actinium.util.currConfigName
@@ -69,6 +70,9 @@ class MainRecyclerAdapter(val activity: AppCompatActivity) : RecyclerView.Adapte
                             if (oriFile.renameTo(newFile) &&
                                     activity.currConfigName == oriName)
                                 activity.defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, newName)
+
+                            activity.saveVpnNetworkInfo(newName,
+                                    activity.loadVpnNetworkInfo(oriName, VpnNetworkInfo())!!)
 
                             updateConfigList()
                             actionMode?.finish()

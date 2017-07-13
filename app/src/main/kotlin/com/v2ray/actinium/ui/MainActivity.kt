@@ -7,6 +7,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.net.Uri
 import android.net.VpnService
+import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.support.v7.widget.AppCompatEditText
@@ -21,6 +22,7 @@ import com.v2ray.actinium.defaultDPreference
 import com.v2ray.actinium.dto.VpnNetworkInfo
 import com.v2ray.actinium.extension.alert
 import com.v2ray.actinium.extension.loadVpnNetworkInfo
+import com.v2ray.actinium.extension.saveVpnNetworkInfo
 import com.v2ray.actinium.extra.IV2RayServiceCallbackStub
 import com.v2ray.actinium.service.V2RayVpnService
 import com.v2ray.actinium.util.ConfigManager
@@ -182,14 +184,16 @@ class MainActivity : BaseActivity() {
             val rawInputStream = contentResolver.openInputStream(uri)
             handlerNewConfigFile(rawInputStream)
         } catch (e: FileNotFoundException) {
-            RxPermissions.getInstance(this)
-                    .request(Manifest.permission.READ_EXTERNAL_STORAGE)
-                    .subscribe {
-                        if (it)
-                            tryOpenStreamFromUri(uri)
-                        else
-                            toast(R.string.toast_permission_denied)
-                    }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
+                RxPermissions.getInstance(this)
+                        .request(Manifest.permission.READ_EXTERNAL_STORAGE)
+                        .subscribe {
+                            if (it)
+                                tryOpenStreamFromUri(uri)
+                            else
+                                toast(R.string.toast_permission_denied)
+                        }
+        } catch (t: Throwable) {
         }
     }
 
@@ -214,6 +218,8 @@ class MainActivity : BaseActivity() {
                     if (!fabChecked)
                         defaultDPreference.setPrefString(ConfigManager.PREF_CURR_CONFIG, name)
 
+                    saveVpnNetworkInfo(name, VpnNetworkInfo())
+
                     adapter.updateConfigList()
                 }
 
@@ -231,7 +237,7 @@ class MainActivity : BaseActivity() {
             val file = File(uri.path)
             if (file.canRead())
                 handlerNewConfigFile(file.inputStream())
-            else
+            else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
                 RxPermissions.getInstance(this)
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE)
                         .subscribe {

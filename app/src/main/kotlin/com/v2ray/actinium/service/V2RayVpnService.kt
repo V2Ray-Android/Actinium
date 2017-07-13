@@ -299,7 +299,7 @@ class V2RayVpnService : VpnService() {
                 if (line.startsWith(prefix)) {
                     val numbers = line.substring(prefix.length).split(' ')
                             .filter(String::isNotEmpty)
-                            .map(String::toInt)
+                            .map(String::toLong)
                     if (numbers.size > 10)
                         return VpnNetworkInfo(numbers[0], numbers[1], numbers[8], numbers[9])
                     break
