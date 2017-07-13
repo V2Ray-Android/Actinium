@@ -11,7 +11,7 @@ android {
         applicationId "com.v2ray.actinium"
         minSdkVersion 15
         targetSdkVersion Integer.parseInt("$targetSdkVer")
-        versionCode 23
+        versionCode 25
         versionName "0.9.0"
     }
 
