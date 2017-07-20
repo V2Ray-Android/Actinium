@@ -11,8 +11,8 @@ android {
         applicationId "com.v2ray.actinium"
         minSdkVersion 15
         targetSdkVersion Integer.parseInt("$targetSdkVer")
-        versionCode 26
-        versionName "0.10.0"
+        versionCode 27
+        versionName "0.10.1"
     }
 
     signingConfigs {
