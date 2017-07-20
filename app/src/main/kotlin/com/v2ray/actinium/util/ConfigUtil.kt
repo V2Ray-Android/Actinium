@@ -3,13 +3,17 @@ package com.v2ray.actinium.util
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import org.apache.commons.validator.routines.InetAddressValidator
+import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
 import java.util.*
+import java.util.regex.Pattern
 
 object ConfigUtil {
+    val domainPattern: Pattern by lazy { Pattern.compile("^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\\.[a-zA-Z]{2,3})$") }
+
     val replacementPairs by lazy {
-        listOf("port" to 10808,
+        mapOf("port" to 10808,
                 "inbound" to JSONObject("""{
                     "protocol": "socks",
                     "listen": "127.0.0.1",
@@ -53,7 +57,8 @@ object ConfigUtil {
                 }"""),
                 "log" to JSONObject("""{
                     "loglevel": "warning"
-                }""")
+                }"""),
+                "inboundDetour" to JSONArray()
         )
     }
 
@@ -70,7 +75,30 @@ object ConfigUtil {
 
     fun convertConfig(conf: String): String {
         val jObj = JSONObject(conf)
+
+        val replacementPairs = replacementPairs
+
+        val vpoint = readVPointFromConfig(jObj)
+        if (vpoint != null) {
+            val addr = readAddressFromVPoint(vpoint)
+
+            if (domainPattern.matcher(addr).matches()) {
+                val preparedDomainName = JSONObject("""{
+                    "domainName":[
+                    "%domain%:%port%"
+                    ],
+                    "tcpVersion":"tcp4",
+                    "udpVersion":"udp4"
+                }"""
+                        .replace("%domain%", addr!!).replace("%port%", readPortFromVPoint(vpoint)!!))
+
+                (replacementPairs["#lib2ray"] as JSONObject)
+                        .putOpt("preparedDomainName", preparedDomainName)
+            }
+        }
+
         jObj.putOpt(replacementPairs)
+
         return jObj.toString()
     }
 
@@ -100,9 +128,7 @@ object ConfigUtil {
         return ret.toTypedArray()
     }
 
-    fun getOutboundFromConfig(conf: String): JSONObject? {
-        val json = JSONObject(conf)
-
+    fun getOutboundFromConfig(json: JSONObject): JSONObject? {
         if (!json.has("outbound"))
             return null
         val outbound = json.optJSONObject("outbound")
@@ -110,7 +136,9 @@ object ConfigUtil {
         return outbound
     }
 
-    fun readAddressFromConfig(conf: String): String? {
+    fun getOutboundFromConfig(conf: String) = getOutboundFromConfig(JSONObject(conf))
+
+    fun readVPointFromConfig(conf: String): JSONObject? {
         val outbound = getOutboundFromConfig(conf) ?: return null
 
         if (!outbound.has("settings"))
@@ -125,9 +153,49 @@ object ConfigUtil {
             return null
         val vpoint = vnext.optJSONObject(0)
 
+        return vpoint
+    }
+
+    fun readVPointFromConfig(conf: JSONObject): JSONObject? {
+        val outbound = getOutboundFromConfig(conf) ?: return null
+
+        if (!outbound.has("settings"))
+            return null
+        val settings = outbound.optJSONObject("settings")
+
+        if (!settings.has("vnext"))
+            return null
+        val vnext = settings.optJSONArray("vnext")
+
+        if (vnext.length() < 1)
+            return null
+        val vpoint = vnext.optJSONObject(0)
+
+        return vpoint
+    }
+
+    fun readAddressFromConfig(conf: String): String? {
+        val vpoint = readVPointFromConfig(conf) ?: return null
+        return readAddressFromVPoint(vpoint)
+    }
+
+    fun readAddressFromVPoint(vpoint: JSONObject): String? {
         if (!vpoint.has("address"))
             return null
         val address = vpoint.optString("address")
+
+        return address
+    }
+
+    fun readPortFromConfig(conf: String): String? {
+        val vpoint = readVPointFromConfig(conf) ?: return null
+        return readPortFromVPoint(vpoint)
+    }
+
+    fun readPortFromVPoint(vpoint: JSONObject): String? {
+        if (!vpoint.has("port"))
+            return null
+        val address = vpoint.optString("port")
 
         return address
     }
@@ -162,3 +230,4 @@ object ConfigUtil {
 
 fun JSONObject.putOpt(pair: Pair<String, Any>) = putOpt(pair.first, pair.second)!!
 fun JSONObject.putOpt(pairs: List<Pair<String, Any>>) = pairs.forEach { putOpt(it) }
+fun JSONObject.putOpt(pairs: Map<String, Any>) = pairs.forEach { putOpt(it.key to it.value) }
