@@ -78,7 +78,7 @@ object ConfigUtil {
 
         val replacementPairs = replacementPairs
 
-        val vpoint = readVPointFromConfig(jObj)
+        /*val vpoint = readVPointFromConfig(jObj)
         if (vpoint != null) {
             val addr = readAddressFromVPoint(vpoint)
 
@@ -95,7 +95,7 @@ object ConfigUtil {
                 (replacementPairs["#lib2ray"] as JSONObject)
                         .putOpt("preparedDomainName", preparedDomainName)
             }
-        }
+        }*/
 
         jObj.putOpt(replacementPairs)
 
