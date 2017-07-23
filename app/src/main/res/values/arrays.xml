@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="entries_pref_auto_restart">
+        <item>@string/entries_pref_auto_restart_tcp</item>
+        <item>@string/entries_pref_auto_restart_kcp</item>
+    </string-array>
+
+    <string-array name="values_pref_auto_restart" translatable="false">
+        <item>tcp</item>
+        <item>kcp</item>
+    </string-array>
+</resources>

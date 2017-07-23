@@ -215,9 +215,11 @@ class V2RayVpnService : VpnService() {
 
             configContent = currConfigFile.readText()
 
-            if (defaultDPreference
-                    .getPrefBoolean(SettingsActivity.PREF_AUTO_RESTART, false)
-                    && ConfigUtil.isKcpConfig(configContent))
+            val autoRestart = defaultDPreference
+                    .getPrefStringSet(SettingsActivity.PREF_AUTO_RESTART_SET, emptySet())
+
+            if (autoRestart.contains("kcp") && ConfigUtil.isKcpConfig(configContent)
+                    || autoRestart.contains("tcp"))
                 connectivitySubscription = ReactiveNetwork.observeNetworkConnectivity(this.applicationContext)
                         .subscribeOn(Schedulers.io())
                         .skip(1)

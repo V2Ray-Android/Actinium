@@ -11,9 +11,10 @@
             android:summary="@string/summary_pref_per_app_proxy"
             android:title="@string/title_pref_per_app_proxy" />
 
-        <CheckBoxPreference
-            android:key="pref_auto_restart"
-            android:summary="@string/summary_pref_auto_restart"
+        <MultiSelectListPreference
+            android:entries="@array/entries_pref_auto_restart"
+            android:entryValues="@array/values_pref_auto_restart"
+            android:key="pref_auto_restart_set"
             android:title="@string/title_pref_auto_restart" />
 
         <CheckBoxPreference

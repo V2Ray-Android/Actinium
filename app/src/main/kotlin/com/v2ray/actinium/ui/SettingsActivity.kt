@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
 import android.preference.CheckBoxPreference
+import android.preference.MultiSelectListPreference
 import android.preference.Preference
 import android.preference.PreferenceFragment
 import android.support.v7.app.AppCompatActivity
@@ -29,6 +30,7 @@ class SettingsActivity : BaseActivity() {
         const val PREF_LICENSES = "pref_licenses"
         const val PREF_FEEDBACK = "pref_feedback"
         const val PREF_AUTO_RESTART = "pref_auto_restart"
+        const val PREF_AUTO_RESTART_SET = "pref_auto_restart_set"
         const val PREF_FOREGROUND_SERVICE = "pref_foreground_service"
         const val PREF_CORE_VERSION = "pref_core_version"
     }
@@ -42,7 +44,7 @@ class SettingsActivity : BaseActivity() {
 
     class SettingsFragment : PreferenceFragment(), SharedPreferences.OnSharedPreferenceChangeListener {
         val perAppProxy by lazy { findPreference(PREF_PER_APP_PROXY) as CheckBoxPreference }
-        val autoRestart by lazy { findPreference(PREF_AUTO_RESTART) as CheckBoxPreference }
+        val autoRestart by lazy { findPreference(PREF_AUTO_RESTART_SET) as MultiSelectListPreference }
         val licenses: Preference by lazy { findPreference(PREF_LICENSES) }
         val feedback: Preference by lazy { findPreference(PREF_FEEDBACK) }
         val coreVersion: Preference by lazy { findPreference(PREF_CORE_VERSION) }
@@ -101,6 +103,8 @@ class SettingsActivity : BaseActivity() {
 
             perAppProxy.isChecked = defaultSharedPreferences.getBoolean(PREF_PER_APP_PROXY, false)
 
+            autoRestart.summary = defaultSharedPreferences.getStringSet(PREF_AUTO_RESTART_SET, emptySet()).joinToString { it }
+
             defaultSharedPreferences.registerOnSharedPreferenceChangeListener(this)
         }
 
@@ -124,6 +128,12 @@ class SettingsActivity : BaseActivity() {
 
                 PREF_PER_APP_PROXY ->
                     act.defaultDPreference.setPrefBoolean(key, sharedPreferences.getBoolean(key, false))
+
+                PREF_AUTO_RESTART_SET -> {
+                    val set = sharedPreferences.getStringSet(key, null)
+                    act.defaultDPreference.setPrefStringSet(key, set)
+                    autoRestart.summary = set.joinToString { it }
+                }
             }
         }
     }

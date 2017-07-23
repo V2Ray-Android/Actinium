@@ -42,8 +42,9 @@
     <string name="title_pref_feedback">Feedback</string>
     <string name="summary_pref_feedback">Feedback enhancements or bugs to GitHub</string>
 
-    <string name="title_pref_auto_restart">Auto restart KCP connections</string>
-    <string name="summary_pref_auto_restart">Auto restart KCP connections when network state changed, can reduce the time of network interruption, but it may lead to some instability</string>
+    <string name="title_pref_auto_restart">Auto restart connections</string>
+    <string name="entries_pref_auto_restart_tcp">TCP</string>
+    <string name="entries_pref_auto_restart_kcp">KCP</string>
 
     <string name="title_pref_foreground_service">Foreground service</string>
     <string name="summary_pref_foreground_service">Use foreground service to prevent it from being killed by system, this will display a notification</string>
