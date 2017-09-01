@@ -85,9 +85,8 @@ class V2RayVpnService : VpnService() {
 
     val binder = object : IV2RayServiceStub(this) {
         override fun isRunning(): Boolean {
-            val isRunning = v2rayPoint.isRunning
-                    && VpnService.prepare(this@V2RayVpnService) == null
-            return isRunning
+            return v2rayPoint.isRunning
+                    && prepare(this@V2RayVpnService) == null
         }
 
         override fun stopV2Ray() {
@@ -232,7 +231,7 @@ class V2RayVpnService : VpnService() {
                         }
 
             v2rayPoint.callbacks = v2rayCallback
-            v2rayPoint.vpnSupportSet = v2rayCallback
+            v2rayPoint.setVpnSupportSet(v2rayCallback)
             v2rayPoint.configureFile = "V2Ray_internal/ConfigureFileContent"
             v2rayPoint.configureFileContent = configContent
             v2rayPoint.runLoop()
@@ -329,12 +328,12 @@ class V2RayVpnService : VpnService() {
 
         override fun setup(s: String): Long {
             Logger.d(s)
-            try {
+            return try {
                 this@V2RayVpnService.setup(s)
-                return 0
+                0
             } catch (e: Exception) {
                 e.printStackTrace()
-                return -1
+                -1
             }
         }
     }
