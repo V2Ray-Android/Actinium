@@ -15,6 +15,7 @@ object ConfigUtil {
     val replacementPairs by lazy {
         mapOf("port" to 10808,
                 "inbound" to JSONObject("""{
+                    "domainOverride": ["http", "tls"],
                     "protocol": "socks",
                     "listen": "127.0.0.1",
                     "settings": {
