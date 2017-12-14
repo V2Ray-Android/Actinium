@@ -11,14 +11,14 @@ android {
         applicationId "com.v2ray.actinium"
         minSdkVersion 15
         targetSdkVersion Integer.parseInt("$targetSdkVer")
-        versionCode 28
-        versionName "0.10.2"
+        versionCode 30
+        versionName "0.10.4"
     }
 
     signingConfigs {
         release {
-            def File signingConfFile = file("../signing.properties")
-            def Properties signingConf = new Properties()
+            File signingConfFile = file("../signing.properties")
+            Properties signingConf = new Properties()
             signingConf.load(new FileInputStream(signingConfFile))
 
             storeFile file(signingConf['storeFile'])
@@ -97,11 +97,11 @@ dependencies {
         exclude group: 'commons-beanutils'
     }
 
-    compile 'com.google.code.gson:gson:2.7'
+    compile 'com.google.code.gson:gson:2.8.0'
 
     compile 'com.github.pwittchen:reactivenetwork:0.5.1'
 
-    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.7.0@aar'
+    compile 'com.tbruyelle.rxpermissions:rxpermissions:0.9.1@aar'
 
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.1'
 
@@ -125,7 +125,7 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-android-extensions:$kotlinVersion"
-        classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.3'
+        classpath 'com.tencent.mm:AndResGuard-gradle-plugin:1.2.10'
     }
 }
 
@@ -183,7 +183,7 @@ andResGuard {
             "resources.arsc"
     ]
     sevenzip {
-        artifact = 'com.tencent.mm:SevenZip:1.2.3'
+        artifact = 'com.tencent.mm:SevenZip:1.2.10'
         //path = "/usr/local/bin/7za"
     }
 }

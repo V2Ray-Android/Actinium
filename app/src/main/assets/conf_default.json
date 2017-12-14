@@ -11,28 +11,35 @@
       "udp": true
     }
   },
-  "inboundDetour": [],
   "outbound": {
     "protocol": "vmess",
     "settings": {
       "vnext": [
         {
           "address": "v2ray.cool",
-          "port": 10086,
+          "port": 443,
           "users": [
             {
-              "id": "23ad6b10-8d1a-40f7-8ad0-e3e35cd38297",
-              "alterId": 64
+              "id": "a3482e88-686a-4a58-8126-99c9df64b7bf",
+              "alterId": 64,
+              "security": "auto"
             }
           ]
         }
       ]
     },
+    "mux": {
+      "enabled": true
+    },
     "streamSettings": {
-      "network": "tcp",
-      "security": "none",
+      "network": "ws",
+      "security": "tls",
       "tlsSettings": {
+        "serverName": "v2ray.cool",
         "allowInsecure": true
+      },
+      "wsSettings": {
+        "path": "/v2ray.cool/"
       }
     }
   },
@@ -76,14 +83,14 @@
           "outboundTag": "direct"
         },
         {
-          "type": "chinasites",
+          "type": "field",
+          "domain": [
+            "geosite:cn"
+          ],
           "outboundTag": "direct"
         },
         {
           "type": "field",
-          "domain": [
-            "*.5ivdo.com"
-          ],
           "ip": [
             "0.0.0.0/8",
             "10.0.0.0/8",
@@ -99,18 +106,21 @@
             "203.0.113.0/24",
             "::1/128",
             "fc00::/7",
-            "fe80::/10"
+            "fe80::/10",
+            "geoip:cn"
           ],
-          "outboundTag": "direct"
-        },
-        {
-          "type": "chinaip",
           "outboundTag": "direct"
         }
       ]
     }
   },
-  "transport": {},
+  "policy": {
+    "levels": {
+      "0": {
+        "uplinkOnly": 0
+      }
+    }
+  },
   "#lib2ray": {
     "enabled": true,
     "listener": {

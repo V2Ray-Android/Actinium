@@ -185,7 +185,7 @@ class MainActivity : BaseActivity() {
             handlerNewConfigFile(rawInputStream)
         } catch (e: FileNotFoundException) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                RxPermissions.getInstance(this)
+                RxPermissions(this)
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE)
                         .subscribe {
                             if (it)
@@ -238,7 +238,7 @@ class MainActivity : BaseActivity() {
             if (file.canRead())
                 handlerNewConfigFile(file.inputStream())
             else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN)
-                RxPermissions.getInstance(this)
+                RxPermissions(this)
                         .request(Manifest.permission.READ_EXTERNAL_STORAGE)
                         .subscribe {
                             if (it)

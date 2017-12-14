@@ -10,9 +10,9 @@ import java.util.*
 import java.util.regex.Pattern
 
 object ConfigUtil {
-    val domainPattern: Pattern by lazy { Pattern.compile("^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\\.[a-zA-Z]{2,3})$") }
+    private val domainPattern: Pattern by lazy { Pattern.compile("^(([a-zA-Z]{1})|([a-zA-Z]{1}[a-zA-Z]{1})|([a-zA-Z]{1}[0-9]{1})|([0-9]{1}[a-zA-Z]{1})|([a-zA-Z0-9][a-zA-Z0-9-_]{1,61}[a-zA-Z0-9]))\\.([a-zA-Z]{2,6}|[a-zA-Z0-9-]{2,30}\\.[a-zA-Z]{2,3})$") }
 
-    val replacementPairs by lazy {
+    private val replacementPairs by lazy {
         mapOf("port" to 10808,
                 "inbound" to JSONObject("""{
                     "domainOverride": ["http", "tls"],
@@ -64,11 +64,11 @@ object ConfigUtil {
     }
 
     fun validConfig(conf: String): Boolean {
-        try {
+        return try {
             val jObj = JSONObject(conf)
-            return jObj.has("outbound") and jObj.has("inbound")
+            jObj.has("outbound") and jObj.has("inbound")
         } catch (e: JSONException) {
-            return false
+            false
         }
     }
 
@@ -115,14 +115,14 @@ object ConfigUtil {
         val servers = dns.optJSONArray("servers")
 
         val ret = LinkedHashSet<String>()
-        for (i in 0..servers.length() - 1) {
-            val e = servers.getString(i)
-
-            if (InetAddressValidator.getInstance().isValid(e))
-                ret.add(e)
-            else if (e == "localhost")
-                NetworkUtil.getDnsServers()?.let { ret.addAll(it) }
-        }
+        (0 until servers.length())
+                .map { servers.getString(it) }
+                .forEach { e ->
+                    if (InetAddressValidator.getInstance().isValid(e))
+                        ret.add(e)
+                    else if (e == "localhost")
+                        NetworkUtil.getDnsServers()?.let { ret.addAll(it) }
+                }
 
         ret.addAll(defaultDns)
 
