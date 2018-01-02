@@ -35,6 +35,7 @@ import libv2ray.V2RayVPNServiceSupportsSet
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
+import java.io.File
 import java.io.FileInputStream
 import java.util.concurrent.TimeUnit
 
@@ -83,7 +84,7 @@ class V2RayVpnService : VpnService() {
 
     var serviceCallbacks = RemoteCallbackList<IV2RayServiceCallback>()
 
-    val binder = object : IV2RayServiceStub(this) {
+    private val binder = object : IV2RayServiceStub(this) {
         override fun isRunning(): Boolean {
             return v2rayPoint.isRunning
                     && prepare(this@V2RayVpnService) == null
@@ -209,6 +210,16 @@ class V2RayVpnService : VpnService() {
 
     private fun startV2ray() {
         if (!v2rayPoint.isRunning) {
+            Libv2ray.clearAssetsOverride("geoip.dat")
+            Libv2ray.clearAssetsOverride("geosite.dat")
+
+            val geoipPath = "${Environment.getExternalStorageDirectory().path}/v2ray/geoip.dat"
+            Logger.d(File(geoipPath).canRead())
+            if (File(geoipPath).canRead())
+                Libv2ray.setAssetsOverride("geoip.dat", geoipPath)
+            val geositePath = "${Environment.getExternalStorageDirectory().path}/v2ray/geosite.dat"
+            if (File(geositePath).canRead())
+                Libv2ray.setAssetsOverride("geosite.dat", geositePath)
 
             registerReceiver(stopV2RayReceiver, IntentFilter(ACTION_STOP_V2RAY))
 
