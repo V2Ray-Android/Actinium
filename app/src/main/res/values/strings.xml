@@ -6,6 +6,7 @@
     <string name="notification_content_title">V2Ray Is Running</string>
     <string name="notification_content_text">Using config: %1$s</string>
     <string name="notification_action_stop_v2ray">Stop V2Ray</string>
+    <string name="notification_name">V2Ray Background Service</string>
 
     <!-- MainActivity -->
     <string name="menu_item_add_config">Add config</string>

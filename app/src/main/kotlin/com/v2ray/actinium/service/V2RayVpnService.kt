@@ -1,15 +1,20 @@
 package com.v2ray.actinium.service
 
+import android.annotation.TargetApi
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.pm.PackageManager
+import android.graphics.Color
 import android.net.NetworkInfo
 import android.net.VpnService
 import android.os.*
-import android.support.v7.app.NotificationCompat
+import android.support.v4.app.NotificationCompat
 import android.util.Log
 import com.github.pwittchen.reactivenetwork.library.Connectivity
 import com.github.pwittchen.reactivenetwork.library.ReactiveNetwork
@@ -32,6 +37,8 @@ import com.v2ray.actinium.util.currConfigName
 import libv2ray.Libv2ray
 import libv2ray.V2RayCallbacks
 import libv2ray.V2RayVPNServiceSupportsSet
+import org.jetbrains.anko.configuration
+import org.jetbrains.anko.notificationManager
 import rx.Subscription
 import rx.android.schedulers.AndroidSchedulers
 import rx.schedulers.Schedulers
@@ -44,6 +51,7 @@ class V2RayVpnService : VpnService() {
         const val NOTIFICATION_ID = 1
         const val NOTIFICATION_PENDING_INTENT_CONTENT = 0
         const val NOTIFICATION_PENDING_INTENT_STOP_V2RAY = 1
+        const val NOTIFICATION_CHANNEL_ID = "ACTINIUM_BG_CHANNEL_ID"
         const val ACTION_STOP_V2RAY = "com.v2ray.actinium.action.STOP_V2RAY"
 
         fun startV2Ray(context: Context) {
@@ -285,7 +293,9 @@ class V2RayVpnService : VpnService() {
                 NOTIFICATION_PENDING_INTENT_STOP_V2RAY, stopV2RayIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val notification = NotificationCompat.Builder(applicationContext)
+        configuration(fromSdk = Build.VERSION_CODES.O) { createNotificationChannel() }
+
+        val notification = NotificationCompat.Builder(applicationContext, NOTIFICATION_CHANNEL_ID)
                 .setSmallIcon(R.drawable.ic_action_logo)
                 .setContentTitle(currConfigName)
                 .setContentText(text)
@@ -301,6 +311,16 @@ class V2RayVpnService : VpnService() {
 
     private fun cancelNotification() {
         stopForeground(true)
+    }
+
+    @TargetApi(Build.VERSION_CODES.O)
+    private fun createNotificationChannel() {
+        val channelName = getString(R.string.notification_name)
+        val chan = NotificationChannel(NOTIFICATION_CHANNEL_ID,
+                channelName, NotificationManager.IMPORTANCE_NONE)
+        chan.lightColor = Color.DKGRAY
+        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        notificationManager.createNotificationChannel(chan)
     }
 
     private val vpnNetworkInfo: VpnNetworkInfo?

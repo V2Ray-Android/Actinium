@@ -6,6 +6,7 @@
     <string name="notification_content_title">V2Ray 正在运行</string>
     <string name="notification_content_text">正在使用的配置: %1$s</string>
     <string name="notification_action_stop_v2ray">停止V2Ray</string>
+    <string name="notification_name">V2Ray 后台服务</string>
 
     <!-- MainActivity -->
     <string name="menu_item_add_config">添加配置</string>
